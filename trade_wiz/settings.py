@@ -110,7 +110,7 @@ AUTH_USER_MODEL = 'account.User'
 # LIVEDB = True
 
 if LIVEDB == True:
-    DB_NAME='Tradewiz_live_db1'
+    DB_NAME='tradewiz_live_db1'
     DB_USER='tradewiz_live_db1_user'
     DB_PASSWORD='KxWbwNqKAfhGLLJ77sM7Y2HrgU3rCHTW'
     DB_HOST='dpg-ctv0f4ogph6c73asead0-a.oregon-postgres.render.com'
