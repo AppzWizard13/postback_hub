@@ -151,105 +151,6 @@ def activate_kill_switch(user, access_token, traded_order_count, switch):
 # QUICK EXIT WHILE CLOSING STOPLOSS TESTED OK--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-
-# def autoclosePositionProcess():
-#     print("AUTO CLOSE POSITIONS PROCESS RUNNING....")
-#     ist = pytz.timezone('Asia/Kolkata')
-#     now =  datetime.now(ist)
-#     print(f"Current date and time: {now.strftime('%Y-%m-%d %H:%M:%S')}")
-#     if now.weekday() < 5 and (9 <= now.hour < 16):  # Monday to Friday, 9 AM to 4 PM
-#         try:
-#             print("STARTING AUTO CLOSE POSITION  MONITORING PROCESS...!")
-#             active_users = User.objects.filter(is_active=True, status=True, quick_exit=True)
-#             for user in active_users:
-#                 try:
-#                     if user.quick_exit:
-#                         dhan_client_id = user.dhan_client_id
-#                         dhan_access_token = user.dhan_access_token
-#                         print(f"STARTING QUICK CLOSE POSITION : Processing user: {user.username}, Client ID: {dhan_client_id}")
-#                         # Fetch control data
-#                         control_data = Control.objects.filter(user=user).first()
-#                         # Initialize Dhan client
-#                         dhan = dhanhq(dhan_client_id, dhan_access_token)
-#                         order_list = dhan.get_order_list()
-#                         # print("order_listorder_listorder_list", order_list)
-#                         # Step 1: Sort filtered orders by timestamp in descending order
-#                         traded_order_count = get_traded_order_count(order_list)
-#                         if traded_order_count:
-#                             latest_entry = order_list['data'][0]
-#                             print('LATEST ENTRY : ' , latest_entry)
-#                             if latest_entry['orderType'] == 'STOP_LOSS' and latest_entry['orderStatus'] == 'CANCELLED'and latest_entry['transactionType'] == 'SELL':
-#                                 print("LATEST CANCELLED STOPLOSS ENTRY DETECTED")
-#                                 sl_order_id = latest_entry['orderId']
-#                                 symbol = latest_entry['tradingSymbol']
-#                                 security_id = latest_entry['securityId']
-#                                 client_id = latest_entry['dhanClientId']
-#                                 exchange_segment = latest_entry['exchangeSegment']
-#                                 quantity = latest_entry['quantity']
-#                                 traded_price = float(latest_entry['price'])
-#                                 print("***************************************************************************")
-#                                 print("QUICK EXIT : SELL ORDER PAYLOAD DATA FOR USER     :", user.username)
-#                                 print("SECURITY ID                                       :", security_id)
-#                                 print("CLIENT ID                                         :", client_id)
-#                                 print("EXCHANGE SEGMENT                                  :", exchange_segment)
-#                                 print("QUANTITY                                          :", quantity)
-#                                 print("***************************************************************************")
-#                                 # Place an order for NSE Futures & Options
-#                                 sellOrderResponse = dhan.place_order(
-#                                             security_id=security_id, 
-#                                             exchange_segment=exchange_segment,
-#                                             transaction_type='SELL',
-#                                             quantity=quantity,
-#                                             order_type='MARKET',
-#                                             product_type='INTRADAY',
-#                                             price=0
-#                                         )
-#                                 try:
-#                                     # Save the response in the database
-#                                     DhanKillProcessLog.objects.create(user=user, log=sellOrderResponse, order_count=quantity)
-#                                     # Check for failure in response and save the error message if present
-#                                     if sellOrderResponse.get('status') == 'failure':
-#                                         error_message = sellOrderResponse.get('remarks', {}).get('error_message', 'Unknown error')
-#                                         error_code = sellOrderResponse.get('remarks', {}).get('error_code', 'Unknown code')
-#                                         # Log error in the database
-#                                         DhanKillProcessLog.objects.create(
-#                                             user=user,
-#                                             log={"error_message": error_message, "error_code": error_code},
-#                                             order_count=0
-#                                         )
-#                                         print("Order failed:", error_message)
-
-#                                 except Exception as e:
-#                                     # If an exception occurs, log it in the database and print it
-#                                     DhanKillProcessLog.objects.create(
-#                                         user=user,
-#                                         log={"error_message": str(e), "error_code": "Exception"},
-#                                         order_count=0
-#                                     )
-#                                     print("An error occurred while placing the order:", str(e))
-
-#                                 print(f"INFO: Position Closing Executed Successfully..!")
-#                             else:
-#                                 print(f"INFO: No Open Order for User {user.username}")
-#                         else:
-#                             print(f"INFO: No Open Order for User :{user.username}")
-#                     else:
-#                         print(f"WARNING: Auto SL Disabled for User : {user.username}")
-
-#                 except Exception as e:
-#                     print(f"ERROR: Error processing user {user.username}: {e}")
-
-#             print("No User Found.(May be Killed Already/Not Active)")
-#             print("Auto Quick Exit process completed successfully.")
-#             return JsonResponse({'status': 'success', 'message': 'Monitoring process completed'})
-
-#         except Exception as e:
-#             print(f"ERROR: Error in  stoploss monitoring process: {e}")
-#             return JsonResponse({'status': 'error', 'message': 'An error occurred'}, status=500)
-#     else:
-#         print("INFO: Current time is outside of the scheduled range.")
-
-
 # OPTIMIZED CODE FOR QUICK EXIT PERFOMANCE IS Execution Time: 0.55 seconds -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -569,7 +470,7 @@ def lot_control_process(traded_quantity, traded_symbol, max_lot_size_limit):
     }
     
     # Get the default lot count based on the symbol prefix, default to 25 if no match
-    default_lot_count = next((count for prefix, count in lot_count_map.items() if traded_symbol.startswith(prefix)), 25)
+    default_lot_count = next((count for prefix, count in lot_count_map.items() if traded_symbol.startswith(prefix)), 75)
     
     # Calculate the actual lot count
     actual_lot_count = traded_quantity / default_lot_count
@@ -586,7 +487,7 @@ def get_default_lot_count(traded_symbol):
     }
     
     # Get the default lot count based on the symbol prefix, default to 25 if no match
-    return next((count for prefix, count in lot_count_map.items() if traded_symbol.startswith(prefix)), 25)
+    return next((count for prefix, count in lot_count_map.items() if traded_symbol.startswith(prefix)), 75)
 
 
 def calculateslprice(traded_price, stoploss_parameter, stoploss_type, traded_symbol, quantity):

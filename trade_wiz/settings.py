@@ -15,7 +15,7 @@ import os
 
 
 # Set LIVE_MODE as a variable in your code
-LIVE_MODE=True  
+LIVE_MODE=False  
 
 
 

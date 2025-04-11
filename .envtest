@@ -4,5 +4,5 @@ DB_PASSWORD=1woyJJcEo0wae4cqqhfFn2RGBkbWAj0
 DB_PORT=5432
 DB_USER=tradewiz_live_db_user
 DEBUG=True
-LIVEDB=True
+LIVEDB=False
 TESTMODE=False
