@@ -2,6 +2,7 @@
 {% load static %}
 {% block content %}
 
+
 <div class="container-fluid" style="max-width:none">
     <div class="col-lg-12 d-flex align-items-stretch">
         <div class="card w-100">
@@ -20,6 +21,25 @@
                         </button>
                     </div>
                 </div>
+
+                {% if error_message %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Error:</strong> {{ error_message }}
+                        
+                        {% if token_expired %}
+                        <hr>
+                        <p class="mb-0">
+                            <strong>How to fix:</strong>
+                            <ol>
+                                <li>Login to <a href="https://web.dhan.co" target="_blank">Dhan Web</a></li>
+                                <li>Go to Profile → DhanHQ Trading APIs</li>
+                                <li>Generate a new access token</li>
+                                {% comment %} <li>Update your token in <a href="{% url 'settings_url' %}">Settings</a></li> {% endcomment %}
+                            </ol>
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
                 
 
                 <!-- Filter Form -->

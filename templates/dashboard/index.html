@@ -5,32 +5,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TradeWiz</title>
+  <title>{% block title %}TradeWiz{% endblock %}</title>
   <link rel="shortcut icon" type="image/png" href="{% static 'dashboard/assets/images/logos/favicon.png' %}" />
   <link rel="stylesheet" href="{% static 'dashboard/assets/css/styles.min.css' %}" />
-  <!-- Add the following CSS for collapsed sidebar -->
+  
   <style>
-      body {
-        zoom: 0.85; /* Scales to 85% */
-      }
+    {% comment %} body {
+      zoom: 0.85;
+    } {% endcomment %}
 
     #sidebar.collapsed {
-        width: 60px; /* Adjust the width for collapsed state */
+      width: 60px;
     }
 
     #sidebar.collapsed .hide-menu {
-        display: none; /* Hide the menu items in collapsed state */
+      display: none;
     }
 
-    /* Adjust main content padding when sidebar is collapsed */
     .main-content {
-        transition: margin-left 0.3s ease;
+      transition: margin-left 0.3s ease;
     }
 
     #sidebar.collapsed + .main-content {
-        margin-left: 60px; /* Adjust margin for main content when sidebar is collapsed */
+      margin-left: 60px;
     }
-    /* Video background style */
+
     #background-video {
       position: absolute;
       top: 0;
@@ -40,19 +39,17 @@
       object-fit: cover;
       z-index: -1;
     }
-    .nav-icon-hover:hover:before{
-      background-color : #0d41d9 ;
+
+    .nav-icon-hover:hover:before {
+      background-color: #0d41d9;
     }
-    
-  
-    /* Content on top of the video */
+
     .content {
       position: relative;
       z-index: 1;
-      color: #e0e0e0; /* Light text color */
+      color: #e0e0e0;
     }
-    
-  
+
     /* Dark theme styles */
     body {
       background-color: #242424;
@@ -60,23 +57,25 @@
       margin: 0;
       padding: 0;
     }
-  
+
     .page-wrapper {
-      background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+      background-color: rgba(0, 0, 0, 0.5);
     }
-  
+
     .card {
-      background-color: rgba(0, 0, 0, 0.7); /* Darker card background */
+      background-color: rgba(0, 0, 0, 0.7);
       border: 1px solid rgba(0, 0, 0, 0.7);
-      border-radius:25px !important;
+      border-radius: 25px !important;
     }
-    .app-header{
+
+    .app-header {
       background-color: #141414;
     }
-    .sidebar-nav ul .sidebar-item .sidebar-link{
-      color:#5a5b5c;
+
+    .sidebar-nav ul .sidebar-item .sidebar-link {
+      color: #5a5b5c;
     }
-  
+
     .radial-gradient::before {
       content: '';
       position: absolute;
@@ -84,201 +83,194 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.7); /* Darker overlay with opacity */
-      z-index: 0; /* Ensure it stays behind the content */
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 0;
     }
-  
+
     .card-body {
       color: #e0e0e0;
-      background:#141414;
-      border-radius:25px !important;
+      background: #141414;
+      border-radius: 25px !important;
     }
-  
+
     .btn-primary {
       background-color: #0066cc;
       border-color: #0066cc;
     }
-  
+
     .btn-primary:hover {
       background-color: #004d99;
       border-color: #004d99;
     }
-  
+
     .text-primary {
       color: #0066cc !important;
     }
-  
+
     .form-check-input {
       background-color: #3a3a3a;
       border-color: #444;
     }
-  
+
     .form-check-label {
       color: #e0e0e0;
     }
-  
+
     .toast {
       background-color: #333;
       color: #e0e0e0;
     }
-  
+
     .toast-header {
       background-color: #444;
     }
 
-    .sidebar-nav, .brand-logo, .left-sidebar{
-      background:#141414;
+    .sidebar-nav, .brand-logo, .left-sidebar {
+      background: #141414;
       border: black;
     }
-  
-    .modal-content, .dropdown-menu, .dropdown-item:focus{
-      background:#141414;
-      color:grey;
 
+    .modal-content, .dropdown-menu, .dropdown-item:focus {
+      background: #141414;
+      color: grey;
     }
-    .form-label:{
-      color: white  !important;
-    }
+
     .form-label {
       color: white !important;
-     }
-    /* Input field styles */
+    }
+
     .form-control {
-      background-color: rgba(0, 0, 0, 0.8); /* Dark, slightly transparent background */
+      background-color: rgba(0, 0, 0, 0.8);
       border-color: #444;
       color: #d1d1d1;
       padding: 12px;
       border-radius: 5px;
       transition: background-color 0.3s ease, border-color 0.3s ease;
     }
-  
-    /* On focus, make the input darker */
+
     .form-control:focus {
-      background-color: rgba(0, 0, 0, 0.9); /* Darken on focus */
+      background-color: rgba(0, 0, 0, 0.9);
       border-color: #121c85;
       color: #e0e0e0;
     }
-  
+
     a {
       color: #0066cc;
     }
-  
+
     a:hover {
       color: #004d99;
     }
-    .card-title{
-      color: #6f6f6f; /* Grey color for headings and fonts */
+
+    .card-title {
+      color: #6f6f6f;
     }
-    .dark{
-      color: #6f6f6f; /* Grey color for headings and fonts */
+
+    .dark {
+      color: #6f6f6f;
     }
-  
-    /* Grey color for all headings and font texts */
+
     h1, h2, h3, h4, h5, h6, p, span, label {
-      color: #c7c7c7; /* Grey color for headings and fonts */
+      color: #c7c7c7;
     }
 
-    .bg-danger,  .btn-danger{
-      background: #ff0000!important;
-      border-color:  #ff0000!important;
+    .bg-danger, .btn-danger {
+      background: #ff0000 !important;
+      border-color: #ff0000 !important;
     }
 
-    .bg-success, .btn-success, .text-bg-success{
-      background: #1a6b18!important;
-      border-color:  #1a6b18!important;
+    .bg-success, .btn-success, .text-bg-success {
+      background: #1a6b18 !important;
+      border-color: #1a6b18 !important;
     }
 
-    .bg-primary{
+    .bg-primary {
       background: #0d41d9 !important;
     }
-    /* Hides the sidebar completely */
+
     .hidden-sidebar {
-        display: none;
+      display: none;
     }
-    
-    /* Optional: Add transitions for a smooth effect */
+
     #sidebar {
-        transition: all 0.3s ease;
+      transition: all 0.3s ease;
     }
-    
+
     .hidden-sidebar {
-        opacity: 0;
-        transform: translateX(-100%); /* Pushes the sidebar off-screen */
-        pointer-events: none; /* Prevent interactions */
+      opacity: 0;
+      transform: translateX(-100%);
+      pointer-events: none;
     }
 
-    /* Hide the sidebarCollapse button and show menuIcon on screens below 1200px */
     @media (max-width: 1200px) {
-        #sidebarCollapse {
-            display: none; /* Hide close button */
-        }
+      #sidebarCollapse {
+        display: none;
+      }
 
-        #menuIcon {
-            display: block; /* Show menu button */
-        }
+      #menuIcon {
+        display: block;
+      }
     }
 
-    /* Ensure menuIcon is hidden on larger screens */
     @media (min-width: 1201px) {
-        #menuIcon {
-            display: show; /* Hide menu button */
-        }
+      #menuIcon {
+        display: show;
+      }
     }
 
-    
+    {% block extra_css %}{% endblock %}
   </style>
 </head>
 
 <body>
-<!-- Body Wrapper -->
-
-<!-- Toast Container -->
-<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
-  {% for message in messages %}
-  <div class="toast align-items-center text-bg-{{ message.tags }} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+  <!-- Toast Container -->
+  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 11055;">
+    {% for message in messages %}
+    <div class="toast align-items-center text-bg-{{ message.tags }} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
       <div class="d-flex">
-          <div class="toast-body">
-              {{ message }}
-          </div>
-          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        <div class="toast-body">
+          {{ message }}
+        </div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
+    </div>
+    {% endfor %}
   </div>
-  {% endfor %}
-</div>
-<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+
+  <!-- Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
+    
     <!-- Sidebar Start -->
     <aside class="left-sidebar" id="sidebar">
-        <!-- Sidebar scroll-->
-        <div>
-            <div class="brand-logo d-flex align-items-center justify-content-between">
-                <a href="{% url 'dashboard' %}" class="text-nowrap logo-img" style="margin-left: 20px; margin-top: 25px;">
-                    <img src="{% static 'dashboard/assets/images/logos/tradewizlogo.png' %}" width="180" alt="" />
-                </a>
-                <div class="close-btn mx-5 mt-4  sidebartoggler cursor-pointer" id="sidebarCollapse">
-                    <i class="dark ti ti-square-x fs-8"></i>
-                </div>
-                <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
-                  <i class="dark ti ti-square-x fs-8"></i>
-              </div>
-            </div>
-            <!-- Sidebar navigation-->
-            <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
-                <ul id="sidebarnav">
+      <div>
+        <div class="brand-logo d-flex align-items-center justify-content-between">
+          <a href="{% url 'dashboard' %}" class="text-nowrap logo-img" style="margin-left: 20px; margin-top: 25px;">
+            <img src="{% static 'dashboard/assets/images/logos/tradewizlogo.png' %}" width="180" alt="" />
+          </a>
+          <div class="close-btn mx-5 mt-4 sidebartoggler cursor-pointer" id="sidebarCollapse">
+            <i class="dark ti ti-square-x fs-8"></i>
+          </div>
+          <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+            <i class="dark ti ti-square-x fs-8"></i>
+          </div>
+        </div>
+
+        <!-- Sidebar navigation -->
+        <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+          <ul id="sidebarnav">
             <li class="nav-small-cap">
-              <i  style="color: light-blue;" class="ti ti-dots nav-small-cap-icon fs-4"></i>
+              <i style="color: light-blue;" class="ti ti-dots nav-small-cap-icon fs-4"></i>
               <span class="hide-menu">Home</span>
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link" href="{% url 'dashboard' %}" aria-expanded="false">
                 <span>
-                  <i  style="color: light-blue;" class="ti ti-layout-dashboard"></i>
+                  <i style="color: light-blue;" class="ti ti-layout-dashboard"></i>
                 </span>
                 <span class="hide-menu">Dashboard</span>
               </a>
             </li>
-
-
 
             <li class="nav-small-cap">
               <i style="color: light-blue;" class="ti ti-dots nav-small-cap-icon fs-4"></i>
@@ -286,7 +278,7 @@
             </li>
             <li class="sidebar-item">
               {% if request.user.is_superuser %}
-                <a class="sidebar-link" href="{% url 'create_user' %}" aria-expanded="false">
+                <a class="sidebar-link" href="{% url 'user_registration' %}" aria-expanded="false">
                   <span>
                     <i style="color: light-blue;" class="ti ti-user-plus"></i>
                   </span>
@@ -318,6 +310,7 @@
                 </a>
               {% endif %}
             </li>
+
             <li class="nav-small-cap">
               <i style="color: light-blue;" class="ti ti-dots nav-small-cap-icon fs-4"></i>
               <span class="hide-menu">CONTROL MANAGEMENT</span>
@@ -341,7 +334,7 @@
             </li>
             <li class="sidebar-item">
               {% if request.user.is_superuser %}
-                <a class="sidebar-link" href="{% url 'manage_controls' %}" aria-expanded="false">
+                <a class="sidebar-link" href="{% url 'control_list_view' %}" aria-expanded="false">
                   <span>
                     <i style="color: light-blue;" class="ti ti-settings"></i>
                   </span>
@@ -356,17 +349,15 @@
                 </a>
               {% endif %}
             </li>
-            
-
 
             <li class="nav-small-cap">
-              <i  style="color: light-blue;" class="ti ti- nav-small-cap-icon fs-4"></i>
+              <i style="color: light-blue;" class="ti ti-dots nav-small-cap-icon fs-4"></i>
               <span class="hide-menu">REPORTS</span>
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link" href="{% url 'order_history' %}" aria-expanded="false">
                 <span>
-                  <i  style="color: light-blue;" class="ti ti-clipboard-text"></i>
+                  <i style="color: light-blue;" class="ti ti-clipboard-text"></i>
                 </span>
                 <span class="hide-menu">Order History</span>
               </a>
@@ -374,7 +365,7 @@
             <li class="sidebar-item">
               <a class="sidebar-link" href="{% url 'trade_history' %}" aria-expanded="false">
                 <span>
-                  <i  style="color: light-blue;" class="ti ti-report-analytics"></i>
+                  <i style="color: light-blue;" class="ti ti-report-analytics"></i>
                 </span>
                 <span class="hide-menu">Trade History</span>
               </a>
@@ -382,7 +373,7 @@
             <li class="sidebar-item">
               <a class="sidebar-link" href="{% url 'daily_account_overview_list' %}" aria-expanded="false">
                 <span>
-                  <i  style="color: light-blue;" class="ti ti-calendar-event"></i>
+                  <i style="color: light-blue;" class="ti ti-calendar-event"></i>
                 </span>
                 <span class="hide-menu">Daily Overview Report</span>
               </a>
@@ -390,19 +381,20 @@
             <li class="sidebar-item">
               <a class="sidebar-link" href="{% url 'dhan-kill-log-list' %}" aria-expanded="false">
                 <span>
-                  <i class=" ti ti-plug-connected-x"></i>
+                  <i class="ti ti-plug-connected-x"></i>
                 </span>
                 <span class="hide-menu">Kill Activation log</span>
               </a>
             </li>
+
             <li class="nav-small-cap">
-              <i  style="color: light-blue;" class="ti ti- nav-small-cap-icon fs-4"></i>
+              <i style="color: light-blue;" class="ti ti-dots nav-small-cap-icon fs-4"></i>
               <span class="hide-menu">TRADE PLANNER</span>
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link" href="{% url 'create_trade_plan' %}" aria-expanded="false">
                 <span>
-                  <i class=" ti ti-plug-connected-x"></i>
+                  <i class="ti ti-chart-line"></i>
                 </span>
                 <span class="hide-menu">Create Trading Plan</span>
               </a>
@@ -410,26 +402,27 @@
             <li class="sidebar-item">
               <a class="sidebar-link" href="{% url 'trade_plan_list_view' %}" aria-expanded="false">
                 <span>
-                  <i class=" ti ti-plug-connected-x"></i>
+                  <i class="ti ti-list"></i>
                 </span>
                 <span class="hide-menu">Trading Plan List</span>
               </a>
             </li>
+
             <li class="nav-small-cap">
-              <i  style="color: light-blue;" class="ti ti- nav-small-cap-icon fs-4"></i>
+              <i style="color: light-blue;" class="ti ti-dots nav-small-cap-icon fs-4"></i>
               <span class="hide-menu">ANALYSIS</span>
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link" href="{% url 'daily_self_analysis' %}" aria-expanded="false">
                 <span>
-                  <i class=" ti ti-plug-connected-x"></i>
+                  <i class="ti ti-brain"></i>
                 </span>
                 <span class="hide-menu">Daily Self Analysis</span>
               </a>
             </li>
 
             <li class="nav-small-cap">
-              <i  style="color: light-blue;" class="ti ti- nav-small-cap-icon fs-4"></i>
+              <i style="color: light-blue;" class="ti ti-dots nav-small-cap-icon fs-4"></i>
               <span class="hide-menu">BROKER</span>
             </li>
             <li class="sidebar-item">
@@ -437,103 +430,31 @@
                 <span>
                   <i class="ti ti-building-bank"></i>
                 </span>
-                <span class="hide-menu">Go to Dhan </span>
+                <span class="hide-menu">Go to Dhan</span>
               </a>
             </li>
-
-            
-            {% comment %} <li class="nav-small-cap">
-              <i class="dark ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">OPTION CHAIN</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-buttons.html" aria-expanded="false">
-                <span>
-                  <i class="dark ti ti-article"></i>
-                </span>
-                <span class="hide-menu">MIDCAP-NIFTY</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-alerts.html" aria-expanded="false">
-                <span>
-                  <i class="dark ti ti-alert-circle"></i>
-                </span>
-                <span class="hide-menu">FIN-NIFTY</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-card.html" aria-expanded="false">
-                <span>
-                  <i class="dark ti ti-cards"></i>
-                </span>
-                <span class="hide-menu">BANK-NIFTY</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-forms.html" aria-expanded="false">
-                <span>
-                  <i class="dark ti ti-file-description"></i>
-                </span>
-                <span class="hide-menu">NIFTY</span>
-              </a>
-            </li> {% endcomment %}
-            {% comment %} <li class="nav-small-cap">
-              <i class="dark ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">EXTRA</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./icon-tabler.html" aria-expanded="false">
-                <span>
-                  <i class="dark ti ti-mood-happy"></i>
-                </span>
-                <span class="hide-menu">Icons</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./sample-page.html" aria-expanded="false">
-                <span>
-                  <i class="dark ti ti-aperture"></i>
-                </span>
-                <span class="hide-menu">Sample Page</span>
-              </a>
-            </li> {% endcomment %}
           </ul>
-          {% comment %} <div class="unlimited-access hide-menu bg-light-primary position-relative mb-7 mt-5 rounded">
-            <div class="d-flex">
-              <div class="unlimited-access-title me-3">
-                <h6 class="fw-semibold fs-4 mb-6 text-grey w-85">Upgrade to pro</h6>
-                <a href="https://adminmart.com/product/modernize-bootstrap-5-admin-template/" target="_blank" class="btn btn-primary fs-2 fw-semibold lh-sm">Buy Pro</a>
-              </div>
-              <div class="unlimited-access-img">
-                <img src="{% static 'dashboard/assets/images/backgrounds/rocket.png' %}" alt="" class="img-fluid">
-              </div>
-            </div>
-          </div> {% endcomment %}
         </nav>
-        <!-- End Sidebar navigation -->
       </div>
-      <!-- End Sidebar scroll-->
     </aside>
-    <!--  Sidebar End -->
+    <!-- Sidebar End -->
 
-    <!--  Main wrapper -->
+    <!-- Main wrapper -->
     <div class="body-wrapper">
-      <!--  Header Start -->
+      <!-- Header Start -->
       <header class="app-header">
         <nav class="navbar navbar-expand-lg navbar-light">
           <ul class="navbar-nav">
-          <!-- Toggle Menu Icon -->
-          <li class="nav-item d-block d-none" id="menuIcon">
-            <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
+            <li class="nav-item d-block d-none" id="menuIcon">
+              <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
                 <i class="dark ti ti-menu-2"></i>
-            </a>
-          </li>
-          <li class="nav-item d-block d-xl-none">
-            <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
+              </a>
+            </li>
+            <li class="nav-item d-block d-xl-none">
+              <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
                 <i class="dark ti ti-menu-2"></i>
-            </a>
-          </li>
+              </a>
+            </li>
             <li class="nav-item">
               <a class="nav-link nav-icon-hover" href="javascript:void(0)">
                 {% if user.kill_switch_1 and not user.kill_switch_2 %}
@@ -549,42 +470,28 @@
           <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
             <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
               <div class="mb-3 mb-sm-0 pr-5">
-                <a  class="btn btn-outline-success mx-3  d-block">Logged : {{request.user}}</a>
+                <a class="btn btn-outline-success mx-3 d-block">Logged: {{request.user}}</a>
               </div>
               <div class="mb-3 mb-sm-0 pr-5">
-                <a  class="btn btn-outline-primary mx-3  d-block">Dashboard : {{user.username}}</a>
+                <a class="btn btn-outline-primary mx-3 d-block">Dashboard: {{user.username}}</a>
               </div>
               {% if dashboard_view and request.user.is_staff %}
               <div>
-                  <select class="form-select bg-dark text-white border-dark" id="userSelect" style="background-color: #333; color: #fff; border-color: #555;">
-                      <option value="" selected disabled style="background-color: #333; color: #bbb;">Select a user</option>
-                      {% for user in users %}
-                          <option value="{{ user.username }}" style="background-color: #333; color: #fff;">{{ user.username }}</option>
-                      {% endfor %}
-                  </select>
+                <select class="form-select bg-dark text-white border-dark" id="userSelect">
+                  <option value="" selected disabled>Select a user</option>
+                  {% for user in users %}
+                    <option value="{{ user.username }}">{{ user.username }}</option>
+                  {% endfor %}
+                </select>
               </div>
               {% endif %}
-              
 
               <li class="nav-item dropdown">
-                <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
-                  aria-expanded="false">
+                <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
                   <img src="{% static 'dashboard/assets/images/profile/user-1.jpg' %}" alt="" width="35" height="35" class="rounded-circle">
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                   <div class="message-body">
-                    {% comment %} <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                      <i class="dark ti ti-user fs-6"></i>
-                      <p class="mb-0 fs-3">My Profile</p>
-                    </a>
-                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                      <i class="dark ti ti-mail fs-6"></i>
-                      <p class="mb-0 fs-3">My Account</p>
-                    </a>
-                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                      <i class="dark ti ti-list-check fs-6"></i>
-                      <p class="mb-0 fs-3">Settings </p>
-                    </a> {% endcomment %}
                     <a href="{% url 'logout'%}" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
                   </div>
                 </div>
@@ -593,1644 +500,85 @@
           </div>
         </nav>
       </header>
+      <!-- Header End -->
 
+      <!-- Main Content Block -->
       {% block content %}
-        <div class="container-fluid" style="max-width: none;">
-          <!--  Row 1 -->
-          <div class="row">
-            {% comment %} <div class="col-lg-12 d-flex align-items-stretch">
-              <div class="card w-100 position-relative">
-                <div class="card-body">
-                  <div class="d-sm-flex d-block align-items-center justify-content-between mb-4">
-                    <h5 class="card-title fw-semibold">Daily Tips</h5>
-                  </div>
-            
-                  {% if advice_dict %}
-                    <!-- Carousel Slider -->
-                    <div id="adviceCarousel" class="carousel slide" data-bs-ride="carousel">
-                      <div class="carousel-inner" style="min-height: 100px;"> <!-- Set a fixed minimum height -->
-                        {% for advice, tip in advice_dict.items %}
-                          <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <div class="advice-content d-flex flex-column justify-content-center align-items-center h-100">
-                              <p class="text-center fs-3 fw-bold">{{ advice }}</p>
-                              <p class="text-center fs-3 text-muted">{{ tip }}</p>
-                            </div>
-                          </div>
-                        {% endfor %}
-                      </div>
-                    </div>
-            
-                    <!-- Pagination Dots at the Bottom of the Card -->
-                    <div style="left: 35% !important; margin-top:20px;"  class="carousel-indicators position-absolute start-50 translate-middle-x bottom-0 mb-4">
-                      {% for advice, tip in advice_dict.items %}
-                        <button type="button" 
-                                data-bs-target="#adviceCarousel" 
-                                data-bs-slide-to="{{ forloop.counter0 }}" 
-                                class="{% if forloop.first %}active{% endif %}" 
-                                aria-current="{% if forloop.first %}true{% endif %}" 
-                                aria-label="Slide {{ forloop.counter }}"></button>
-                      {% endfor %}
-                    </div>
-                  {% else %}
-                    <!-- Show button if no advice found -->
-                    <div class="d-flex align-items-center justify-content-center mt-4">
-                      <button class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm" onclick="window.location.href='{% url 'daily_self_analysis' %}'">
-                        <i class="ti ti-test-x"></i> Please Attend Daily Self Analysis Test
-                      </button>
-                    </div>
-                  {% endif %}
-                </div>
-              </div>
-            </div> {% endcomment %}
-            
-            <div class="col-lg-8 d-flex align-items-strech">
-              <div class="card w-100">
-                <div class="card-body">
-                  <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
-                    <div class="mb-3 mb-sm-0">
-                      <h5 class="card-title fw-semibold">Trade Overview</h5>
-                    </div>
-                    <div class="clock">
-                      <div id="time"> - </div>
-                      <div class="vr "></div>
-                      <div id="remainingTime"> - </div>
-                    </div>
-                    <div>
-                      <select class="form-select text-white fw-bolder">
-                        <option value="1">{{current_date}}</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div id="chart"></div>
-                    <div class="d-flex justify-content-between">
-                      <div class="mb-1 mb-sm-0">
-                        <span class="open_pos_label">Open Position : </span> 
-                        {% if open_position %}
-                          <!-- Button with trading symbol, enabled and green if position data exists -->
-                          <button style="height: 40px; margin-top: 10px;"class="btn btn-success d-block" onclick="openPositionPopup('{{ open_position.0.securityId }}')">
-                            <i class="fs-5 dark ti ti-stairs-up text-white mx-1"></i> {{ open_position.0.tradingSymbol }}
-                          </button>
-                        {% else %}
-                          <!-- Button text "No Positions," blue, and disabled if no position data exists -->
-                          <button style="height: 40px; margin-top: 10px;"class="btn badgclr d-block disabled" tabindex="-1" aria-disabled="true">
-                            No Positions
-                          </button>
-                        {% endif %}
-                      </div>
-                      
-                       <div class="mb-3 mb-sm-0 mr-5">
-                        <span class="remaining-orders">Trades Left: &nbsp;&nbsp;  {{ remaining_trades }}</span> 
-                        <div class="custom-progress-container">
-                          <!-- Progress bar and percentage -->
-                          <div class="progress">
-                            <div class="progress-value" style="width: {{ progress_percentage }}%; background-color: {{ progress_color }}"></div>
-                            <span class="progress-text">{{ remaining_orders }} / {{ peak_order_limit }} Orders</span>
-                          </div>
-                          
-                        </div>
-                        
-                      </div> 
-                    </div>
+      {% endblock %}
 
-                    <style>
-
-                        .alert-dark-mode {
-                          background-color: #333;
-                          color: #fff;
-                          border: 1px solid #444;
-                      }
-                      
-                      .alert-dark-mode .btn-close {
-                          color: #fff;
-                      }
-                      /* Scoped styles for the progress bar */
-                      .custom-progress-container {
-                        font-weight: 600;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        height: 100%;
-                        background: transparent;
-                        padding: 0;
-                        margin: 0;
-                        margin-right: 23px;
-                        font-size: 18px;
-                      }
-                    
-                      /* Container for the progress bar and the order count */
-                      .progress {
-                        background: rgb(10 10 10);
-                        justify-content: space-between;
-                        border-radius: 5px;
-                        align-items: center;
-                        position: relative;
-                        padding: 0 5px;
-                        display: flex;
-                        height: 40px;
-                        width: 300px; /* Make it responsive to parent container */
-                        max-width: 400px; /* Optional max-width for better design */
-                        margin-bottom: 10px;
-                      }
-                    
-                      /* Progress bar value (dynamic background color) */
-                      .progress-value {
-                        box-shadow: 0 10px 40px -10px #fff;
-                        border-radius: 5px;
-                        height: 35px;
-                        width: 0;
-                        transition: background-color 0.3s ease; /* Smooth color transition */
-                      }
-                    
-                      /* Text for order count (will be aligned right) */
-                      .progress-text {
-                        margin-inline: 10px;
-                        color: white;
-                      }
-                    
-                      /* Remaining orders text */
-                      .remaining-orders {
-                        color: #fff;
-                        font-size: 14px;
-                      } 
-                      .badgclr{
-                        background: #3c3c3c
-                      }
-                      [title]:hover::after {
-                        content: attr(title);
-                        position: absolute;
-                        background-color: blue; /* Light background */
-                        color: white; /* Dark text */
-                        padding: 10px 10px;
-                        border-radius: 5px;
-                        font-size: 16px;
-                        white-space: nowrap;
-                        z-index: 10;
-                        margin-top:-50px;
-                    }
-                    
-                    </style>
-
-                    <script>
-                      function openPositionPopup(securityId) {
-                        const url = `https://web.dhan.co/Charts?exch=NSE&seg=D&secid=${securityId}`;
-                        window.open(url, 'PositionChartWindow', 'width=800,height=600');
-                      }
-
-                      function openStopLossPopup(securityId) {
-                        const url = `https://web.dhan.co/Charts?exch=NSE&seg=D&secid=${securityId}`;
-                        window.open(url, 'StopLossChartWindow', 'width=800,height=600');
-                      }
-                    </script>
-                </div>
-                <div class="ms-5 me-5 my-3" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: start;">
-                  {% for week in weekly_progress_data %}
-                      {% if week.status %}
-                          <!-- Display "N/A" when status exists -->
-                          <span class="badge bg-grey fs-2" style="text-align: center;" title="No trade">
-                              T&nbsp;&nbsp;{{ week.serial_number }}
-                          </span>
-                      {% else %}
-                          <!-- Display badge based on profit condition -->
-                          {% if week.actual_profit < 0 %}
-                              <!-- Negative profit, use red (danger) badge -->
-                              <span class="badge bg-danger fs-2" style="text-align: center;" title="PL: {{ week.actual_profit }} on {{ week.updated_on|date:'Y-m-d' }}">
-                                  T&nbsp;&nbsp;{{ week.serial_number }}
-                              </span>
-                          {% else %}
-                              <!-- Positive profit, use green (success) badge -->
-                              <span class="badge bg-success fs-2" style="text-align: center;" title="PL: {{ week.actual_profit }} on {{ week.updated_on|date:'Y-m-d' }}">
-                                  T&nbsp;&nbsp;{{ week.serial_number }}
-                              </span>
-                          {% endif %}
-                      {% endif %}
-                  {% endfor %}
-              </div>
-              
-              <style>
-                  /* General Flexbox Styles */
-                  .ms-5.me-5.my-3 {
-                      display: flex;
-                      flex-wrap: wrap;
-                      gap: 8px;
-                      justify-content: start;
-                  }
-              
-                  /* Badge Styling */
-                  .badge {
-                      text-align: center;
-                      font-size: 16px;
-                      flex-basis: calc(4% - 8px); /* 25 items per row */
-                      margin-bottom: 8px;  /* Space between rows */
-                  }
-              
-                  /* For smaller devices (Mobile) */
-                  @media screen and (max-width: 768px) {
-                      .badge {
-                          flex-basis: calc(10% - 8px); /* 10 items per row for smaller mobile screens */
-                      }
-                  }
-              
-                  /* For very small devices (Extra Small Mobile) */
-                  @media screen and (max-width: 480px) {
-                      .badge {
-                          flex-basis: 20%; /* 5 item per row for very small screens */
-                      }
-                  }
-              </style>
-              
-              
-              
-              
-              
-              
-              </div>
-            </div>
-            <div class="col-lg-4">
-              <div class="row">
-                <div class="col-lg-12">
-                  <!-- Yearly Breakup -->
-                  <div class="card overflow-hidden">
-                    <div class="card-body">
-                      <h5 class="card-title mb-9 fw-semibold">Account Balance</h5>
-                      <div class="row align-items-center">
-                        <div class="col-6">
-                          <h4 class="fw-semibold mb-3">₹ {{fund_data.data.availabelBalance|floatformat:2}}</h4>
-                          <div class="d-flex align-items-center mt-3">
-                            <span>
-                              <i class="fs-5 dark ti ti-coin-rupee text-primary mx-2"></i>
-                            </span>
-                            <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 50px;">SOD:</p>
-                            <div class="me-auto">
-                              <span class="badge bg-primary fs-3">₹ {{ fund_data.data.sodLimit|floatformat:2 }}</span>
-                            </div>
-                          </div>
-                          
-                          <div class="d-flex align-items-center mt-3">
-                            <div class="d-flex align-items-center mb-3">
-                              <span>
-                                <i class="fs-5 dark ti ti-coin-rupee mx-2 {% if total_realized_profit > 0 %} text-success {% elif total_realized_profit < 0 %} text-danger {% else %} text-grey {% endif %}"></i>
-                              </span>
-                              <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 50px;">EOD:</p>
-                              <div class="me-auto">
-                                <span class="badge 
-                                  {% if total_realized_profit > 0 %} bg-success {% elif total_realized_profit < 0 %} bg-danger {% else %} bg-primary {% endif %}
-                                  fs-3">₹ {{ actual_balance|floatformat:2 }}</span>
-                              </div>
-                            </div>                            
-                          </div>
-                        </div>
-                        <div class="col-6">
-                          <div class="d-flex justify-content-center">
-                            <div id="breakup"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-lg-12">
-                  <!-- Monthly Earnings -->
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="row alig n-items-start">
-                        <div class="col-8">
-                          <h5 class="card-title mb-9 fw-semibold">Today Earnings</h5>
-                          <h4 class="fw-semibold mb-1">₹ {{ total_realized_profit|floatformat:2 }}</h4>
-                          
-                          <div class="d-flex align-items-center pb-1">
-                            {% if total_realized_profit > 0 %}
-                              <!-- Positive value: up-right arrow and light success color -->
-                              <span >
-                                <i class="fs-5 dark ti ti-arrow-up-right text-success mx-2"></i>
-                              </span>
-                              <p class="text-success me-1 fs-3 mb-0 fw-bolder">{{pnl_percentage|floatformat:2}}&nbsp;&nbsp;%&nbsp;Profit</p>
-                            {% elif total_realized_profit < 0 %}
-                              <!-- Negative value: down-right arrow and light danger color -->
-                              <span >
-                                <i class="fs-5 dark ti ti-arrow-down-right text-danger mx-2"></i>
-                              </span>
-                              <p class="text-danger me-1 fs-3 mb-0 fw-bolder">{{pnl_percentage|floatformat:2}}&nbsp;&nbsp;%&nbsp;Loss</p>
-                            {% else %}
-                              <!-- Zero value: dot icon and light primary color -->
-                              <span >
-                                <i class="fs-5 dark ti ti-clock text-primary mx-2"></i>
-                              </span>
-                              <p class="text-primary me-1 fs-3 mb-3 fw-bolder" style="margin-top: 13px;">{{pnl_percentage|floatformat:2}}&nbsp;&nbsp;%&nbsp;NO Trades</p>{% endif %}
-                          </div>
-                        </div>
-                        
-                        <div class="col-4">
-                          <div class="d-flex justify-content-end">
-                            <div class="mb-3 mb-sm-0 pr-5">
-                              <a class="btn btn-primary mx-3 fs-3 fw-bold d-block" 
-                                 style="border-width: 3px; border-style: solid;">
-                                PL  &nbsp;&nbsp; {{ actual_profit|floatformat:2 }}
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="mt-1" id="earning"></div>
-                  </div>
-                </div>
-                <div class="col-lg-12">
-                  <!-- RISK FORCAST -->
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="row align-items-start">
-                        <div class="col-8">
-                          <h5 class="card-title fw-semibold" style="margin-bottom: 30px !important;">Risk Forecast</h5>
-                          
-                          <!-- Risk / Trade -->
-                          <div class="d-flex align-items-center mt-4">
-                            <span>
-                              <i class="fs-5 dark ti ti-coin-rupee text-success mx-2"></i>
-                            </span>
-                            <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">A / C Balance:</p>
-                            <div class="ms-auto">
-                              <span class="badge bg-primary text fs-3"> ₹ &nbsp; {{ available_balance|floatformat:2 }}</span>
-                            </div>
-                          </div>
-                          
-                          <!-- Risk / Day -->
-                          <div class="d-flex align-items-center mt-3">
-                            <span>
-                              <i class="fs-5 dark ti ti-coin-rupee text-warning mx-2"></i>
-                            </span>
-                            <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Trade Risk Forecast :</p>
-                            <div class="ms-auto">
-                              <span class="badge bg-danger fs-3">₹ &nbsp;&nbsp; {{ forecast_balance|floatformat:2 }}</span>
-                            </div>
-                          </div>
-                          
-                          <!-- Max Expense -->
-                          <div class="d-flex align-items-center mt-3">
-                            <span>
-                              <i class="fs-5 dark ti ti-coin-rupee text-info mx-2"></i>
-                            </span>
-                            <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Day Risk Forecast:</p>
-                            <div class="ms-auto">
-                              <span class="badge badgclr fs-3">₹ &nbsp; {{ day_risk_forecast|floatformat:2 }} </span>
-                            </div>
-                          </div>
-                        </div>
-                        
-
-                        {% if daily_goal_data %}
-                        <div class="col-4">
-                          <div class="d-flex justify-content-end">
-                              <div class="mb-3 mb-sm-0 pr-5">
-                                  <a href="{% url 'view_trade_plan' daily_goal_data.plan_id %}" class="btn btn-success mx-2 fs-3 fw-bold d-block"
-                                     style="border-width: 1px; border-style: solid; cursor: pointer;">
-                                     GL &nbsp;&nbsp; {{ daily_goal_data.gained_amount }}<br>
-                                  </a>
-                              </div>
-                          </div>
-                      </div>
-
-                       
-
-                        {% else %}
-                        <!-- Activate Kill Button -->
-                        <div class="col-4">
-                          <div class="d-flex justify-content-end">
-                            <div class="mb-3 mb-sm-0 pr-5">
-                              <button class="btn btn-success mx-2 fs-3 fw-bold d-block" 
-                                      style="border-width: 1px; border-style: solid; cursor: pointer;" 
-                                      id="activateKillButton" value="{{ user.username }}">
-                                      Terminate<br>
-                                <span id="action-button" value="{{ user.username }}"></span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                        {% endif %}
-                        
-                        <!-- Confirmation Modal -->
-                        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-                          <div class="modal-dialog">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                              </div>
-                              <div class="modal-body fs-4">
-                                Are you sure you want to activate the kill switch?
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-danger" id="confirmAction">Activate Kill</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-
-
-
-
-            {% comment %} <div class="col-lg-4">
-              <!-- Card 2: New Card Title -->
-              <div class="card">
-                <div class="card-body">
-                    <div class="row align-items-start">
-                        <div class="col-8">
-                            <h5 class="card-title fw-semibold" style="margin-bottom: 20px !important;">Risk Overview</h5>                            
-                            <div class="d-flex align-items-center mb-3">
-                              <span>
-                                  <i class="fs-5 dark ti ti-coin-rupee text-success mx-2"></i>
-                              </span>
-                              <p class="text-grey me-1 fs-3 mb-0">Risk / Trade:</p>
-                              <p class="fs-2 mb-0" id="order-details">{{stoploss_parameter|floatformat:2}}  {{stoploss_type}}</p>
-                          </div>
-                            <div class="d-flex align-items-center mb-3">
-                                <span>
-                                    <i class="fs-5 dark ti ti-coin-rupee text-success mx-2"></i>
-                                </span>
-                                <p class="text-grey me-1 fs-3 mb-0">Risk / Day:</p>
-                                <p class="fs-2 mb-0" id="order-details">{{max_expected_loss|floatformat:2}}</p>
-                            </div>
-                            <div class="d-flex align-items-center mb-3">
-                                <span >
-                                    <i class="fs-5 dark ti ti-coin-rupee text-info mx-2"></i>
-                                </span>
-                                <p class="text-grey me-1 fs-3 mb-0">Max Expense:</p>
-                                <p class="fs-2 mb-0" id="another-detail">{{max_expected_expense|floatformat:2}}</p>
-                            </div>
-                        </div>
-                        <!-- Activate Kill Button -->
-                        <div class="col-4">
-                          <div class="d-flex justify-content-end">
-                              <div class="mb-3 mb-sm-0 pr-5">
-                                  <button class="btn btn-success mx-3 fs-3 fw-bold d-block" 
-                                          style="border-width: 1px; border-style: solid;" 
-                                          id="activateKillButton"  value="{{user.username}}">
-                                      Kill Switch<br><span id="action-button" value="{{user.username}}"></span>
-                                  </button>
-                              </div>
-                          </div>
-                        </div>
-
-                        <!-- Confirmation Modal -->
-                        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                              <div class="modal-content">
-                                <div class="modal-header">
-                                  <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
-                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body fs-4">
-                                  Are you sure you want to activate the kill switch?
-                                </div>
-                                <div class="modal-footer">
-                                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
-                                  <button type="button" class="btn btn-danger" id="confirmAction">Activate Kill</button>
-                                </div>
-                              </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-              </div>  
-            </div> {% endcomment %}
-
-            <div class="col-lg-4">
-              <!-- Card 2: Risk Overview -->
-              <div class="card">
-                <div class="card-body">
-                  <div class="row align-items-start">
-                    <div class="col-8">
-                      <h5 class="card-title fw-semibold" style="margin-bottom: 30px !important;">Risk Overview</h5>
-                      
-                      <!-- Risk / Trade -->
-                      <div class="d-flex align-items-center mt-4">
-                        <span>
-                          <i class="fs-5 dark ti ti-coin-rupee text-success mx-2"></i>
-                        </span>
-                        <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Risk / Trade:</p>
-                        <div class="ms-auto">
-                          <span class="badge badgclr text fs-3">{{ stoploss_parameter|floatformat:1 }} {{ stoploss_type }}</span>
-                        </div>
-                      </div>
-                      
-                      <!-- Risk / Day -->
-                      <div class="d-flex align-items-center mt-3">
-                        <span>
-                          <i class="fs-5 dark ti ti-coin-rupee text-warning mx-2"></i>
-                        </span>
-                        <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Risk / Day:</p>
-                        <div class="ms-auto">
-                          <span class="badge badgclr fs-3">₹ &nbsp;&nbsp; {{ max_expected_loss|floatformat:2 }}</span>
-                        </div>
-                      </div>
-                      
-                      <!-- Max Expense -->
-                      <div class="d-flex align-items-center mt-3">
-                        <span>
-                          <i class="fs-5 dark ti ti-coin-rupee text-info mx-2"></i>
-                        </span>
-                        <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Max Expense:</p>
-                        <div class="ms-auto">
-                          <span class="badge badgclr fs-3">₹ &nbsp; {{ max_expected_expense|floatformat:2 }} </span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Activate Kill Button -->
-                    <div class="col-4">
-                      <div class="d-flex justify-content-end">
-                        <div class="mb-3 mb-sm-0 pr-5">
-                          <button class="btn btn-success mx-2 fs-3 fw-bold d-block" 
-                                  style="border-width: 1px; border-style: solid; cursor: pointer;" 
-                                  id="activateKillButton" value="{{ user.username }}">
-                                  Terminate<br>
-                            <span id="action-button" value="{{ user.username }}"></span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Confirmation Modal -->
-                    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body fs-4">
-                            Are you sure you want to activate the kill switch?
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-danger" id="confirmAction">Activate Kill</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                  </div>
-                </div>
-              </div>
-            </div>
-          
-            <div class="col-lg-4">
-              <!-- Card 3: New Card Title -->
-              <div class="card">
-                <div class="card-body">
-                  <div class="row align-items-start">
-                    <div class="col-8">
-                      <h5 class="card-title fw-semibold" style="margin-bottom: 30px !important;">Service Status</h5>
-                      <div class="d-flex align-items-center mt-4">
-                        <span>
-                          <i class="fs-5 dark ti ti-power mx-2" 
-                             style="color: 
-                               {% if user.kill_switch_1 and not user.kill_switch_2 %}
-                                 orange
-                               {% elif not user.kill_switch_1 and not user.kill_switch_2 %}
-                                 green
-                               {% elif user.kill_switch_1 and user.kill_switch_2 %}
-                                 red
-                               {% endif %};"></i>
-                        </span>
-                        <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Kill Status:</p>
-                        <div class="ms-auto">
-                          {% if user.kill_switch_1 and not user.kill_switch_2 %}
-                            <span class="badge bg-warning text-grey fs-3">Activated</span>
-                          {% elif not user.kill_switch_1 and not user.kill_switch_2 %}
-                            <span class="badge bg-success fs-3">Monitoring</span>
-                          {% elif user.kill_switch_1 and user.kill_switch_2 %}
-                            <span class="badge bg-danger fs-3">Activated</span>
-                          {% endif %}
-                        </div>
-                      </div>
-                      
-                    
-                    <div class="d-flex align-items-center mt-3">
-                      <span>
-                        <i class="fs-5 dark ti ti-power mx-2" 
-                           style="color: {% if user.is_active %}green{% else %}orange{% endif %};"></i>
-                      </span>
-                      <p class="text-grey mx-1 fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Auto Kill:</p>
-                      <div class="ms-auto">
-                        {% if user.is_active %}
-                          <span class="badge bg-success fs-3">Active</span>
-                        {% else %}
-                          <span class="badge bg-warning fs-3">Inactive</span>
-                        {% endif %}
-                      </div>
-                    </div>
-                    
-                   
-                    <div class="d-flex align-items-center mt-3">
-                      {% if request.user.is_staff %}
-                        <span>
-                          <i class="fs-5 dark ti ti-stairs-down mx-2"
-                            style="color: {% if user.auto_stop_loss %}green{% else %}orange{% endif %};"></i>
-                        </span>
-                        <p class="text-grey mx-1 fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Auto SL:</p>
-                        <div class="ms-auto">
-                          {% if user.auto_stop_loss %}
-                            <span class="badge bg-success fs-3">Active</span>
-                          {% else %}
-                            <span class="badge bg-warning fs-3">Inactive</span>
-                          {% endif %}
-                        </div>
-                        {% else %}
-
-                        <span >
-                            <i class="fs-5 dark ti ti-stairs-down text-danger mx-2"></i>
-                        </span>
-                        <p class="text-grey mx-1 fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Auto Monitoring</p>
-                      
-                        <div class="ms-auto">
-                            {% if user.auto_stop_loss %}
-                                <span class="badge bg-primary fs-3">Coming Soon</span>
-                            {% else %}
-                                <span class="badge bg-primary fs-3">Coming Soon</span>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                    </div>
-                    
-                    </div>
-                    <div class="col-4">
-                      <div class="d-flex justify-content-end">
-                        <div class="mb-3 mb-sm-0 pr-5">
-                          <a id="smartExitButton" data-username="{{ user.username }}" 
-                             class="btn btn-primary mx-2 fs-3 fw-bold  d-block" 
-                             style="border-width: 1px; border-style: solid; cursor: pointer;">
-                             Quick&nbsp;Exit </br>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-lg-4">
-              <!-- Card 1: Today Expense -->
-              <div class="card">
-                <div class="card-body">
-                  <div class="row align-items-start mt-2">
-                    <div class="col-8">
-                      <h5 class="card-title fw-semibold" style="margin-bottom: 20px !important;">Today Expense</h5>
-                      <h4 class="fw-semibold mb-4">₹ {{ total_expense|floatformat:2 }}</h4>
-            
-                      <!-- Order Limit -->
-                      <div class="d-flex align-items-center mt-3">
-                        <span>
-                          <i class="fs-5 dark ti ti-clock text-danger mx-2"></i>
-                        </span>
-                        <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Order Limit:</p>
-                        <div class="ms-auto">
-                          <span class="badge badgclr fs-3">{{ order_limit }} &nbsp;&nbsp; - &nbsp;&nbsp; {{ peak_order_limit }}</span>
-                        </div>
-                      </div>
-            
-                      <!-- Brokerage -->
-                      <div class="d-flex align-items-center mt-3">
-                        <span>
-                          <i class="fs-5 dark ti ti-cash text-primary mx-2"></i>
-                        </span>
-                        <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Brokerage:</p>
-                        <div class="ms-auto">
-                          <span class="badge badgclr fs-3">₹ {{ day_exp_brokerge|floatformat:2 }}</span>
-                        </div>
-                      </div>
-                    </div>
-            
-                    <!-- Orders Button -->
-                    {% comment %} <div class="col-4">
-                      <div class="d-flex justify-content-end">
-                        <div class="mb-3 mb-sm-0 pr-5">
-                          <a class="btn btn-primary mx-2 fs-3 fw-bold d-block"
-                             style="border-width: 2px; border-style: solid; cursor: pointer;">
-                            Orders: {{ order_count }} - {{ actual_entry_count }}
-                          </a>
-                        </div>
-                      </div>
-                    </div> {% endcomment %}
-                  <!-- UseRTC Button -->
-                  <div class="col-4">
-                    <div class="d-flex justify-content-end">
-                      <div class="mb-3 mb-sm-0 pr-5">
-                        <button class="btn btn-primary mx-2 fs-3 fw-bold d-block" 
-                                style="border-width: 1px; border-style: solid; cursor: pointer;" 
-                                id="useRTCButton" value="{{ user.username }}" 
-                                data-bs-toggle="modal" data-bs-target="#useRTCModal">
-                                Use&nbsp;RTC<br>
-                          <span id="action-button" value="{{ user.username }}"></span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- UseRTC Confirmation Modal -->
-                  <div class="modal fade" id="useRTCModal" tabindex="-1" aria-labelledby="useRTCModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="useRTCModalLabel">Confirm Action</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body fs-4">
-                          Are you sure you want to proceed with the UseRTC action?
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button type="button" class="btn btn-primary" id="confirmUseRTC">Confirm</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-          
-
-          {% comment %} <div class="row"> {% endcomment %}
-            <div class="col-lg-7 d-flex align-items-stretch">
-              <div class="card w-100">
-                <div class="card-body p-4">
-                  <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="card-title fw-semibold mb-0">Perfomance Overview</h5>
-                    <button class="fs-3 fw-bold btn btn-primary ms-auto">Accuracy : &nbsp; {{accuracy}}&nbsp; %</button>
-                  </div>
-                  <div class="col-12" style="height: 300px;">
-                    <!-- Ensure the container takes up 100% of the available space -->
-                    <div id="hourlyperformanceoverview" style="height: 100%; width: 100%;"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="col-lg-5 d-flex align-items-stretch">
-              <div class="card w-100">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                      <h5 class="card-title fw-semibold mb-0">Positions</h5>
-                      <!-- Pagination Controls -->
-                      <div class="pagination-controls d-flex align-items-center">
-                          <button id="prevPagepos" class="btn btn-primary rounded-circle me-2">‹</button>
-                          <span id="pageInfopos" class="mx-2"></span>
-                            <button id="nextPagepos" class="btn btn-primary rounded-circle">›</button>
-                        </div>
-                    </div>
-                  <div class="table-responsive" style="overflow-y: auto;">
-                    <table class="table text-nowrap mb-0 align-middle" id="positionsTable">
-                      <thead class="text-grey fs-4">
-                        <tr>
-                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Chart</h6></th>
-                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Symbol</h6></th>
-                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Portfolio</h6></th>
-                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Status</h6></th>
-                          {% comment %} <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Buy Quantity</h6></th> {% endcomment %}
-                          {% comment %} <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Average Price</h6></th> {% endcomment %}
-                          
-                          {% comment %} <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Unrealized Profit</h6></th> {% endcomment %}
-                        </tr>
-                      </thead>
-                      <tbody id="positionsTableBody">
-                        {% if position_data.data.errorType %}
-                        <div class="alert alert-danger alert-dark-mode alert-dismissible text-center" role="alert">
-                          <strong>Error:</strong> {{ position_data.data.errorMessage }}
-                      </div>
-                    {% else %}
-                        {% for position in position_data.data %}
-                            <tr>
-                                <td class="border-bottom-0">
-                                    <button class="btn btn-success m-2 fs-2 d-block" onclick="openPopup('{{ position.securityId }}')">View</button>
-                                </td>
-                    
-                                <script>
-                                    function openPopup(securityId) {
-                                        const url = `https://web.dhan.co/Charts?exch=NSE&seg=D&secid=${securityId}`;
-                                        window.open(url, 'ChartWindow', 'width=800,height=600');
-                                    }
-                                </script>
-                    
-                                <td class="border-bottom-0">
-                                    <h6 class="fw-semibold mb-0">{{ position.tradingSymbol }}</h6>
-                                </td>
-                    
-                                <td class="border-bottom-0">
-                                    {% if position.realizedProfit > 0 %}
-                                        <span class="badge bg-success rounded-3 fw-semibold">₹{{ position.realizedProfit|floatformat:2 }}</span>
-                                    {% elif position.realizedProfit < 0 and position.realizedProfit > -100 %}
-                                        <span class="badge bg-warning rounded-3 fw-semibold">₹{{ position.realizedProfit|floatformat:2 }}</span>
-                                    {% else %}
-                                        <span class="badge bg-danger rounded-3 fw-semibold">₹{{ position.realizedProfit|floatformat:2 }}</span>
-                                    {% endif %}
-                                </td>
-                                <td class="border-bottom-0">
-                                    <span class="fw-normal">{{ position.positionType }}</span>
-                                </td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="6" class="text-center fw-semibold">No Positions Found</td>
-                            </tr>
-                        {% endfor %}
-                    {% endif %}
-                    
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-
-
-           {% if request.user.is_staff %}
-            <div class="col-lg-5 d-flex align-items-stretch" >
-              <div class="card w-100">
-                <div class="card-body p-4">
-                  <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="card-title fw-semibold mb-0">Active Users</h5>
-                  </div>
-                  <div class="table-responsive" style="overflow-y: auto;">
-                    <table class="table text-nowrap mb-0 align-middle" id="positionsTable">
-                      <thead class="text-grey fs-4">
-                        <tr>
-                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Username</h6></th>
-                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Status</h6></th>
-                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">R T C</h6></th>
-                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Kill Status 1</h6></th>
-                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Kill Status 2</h6></th>
-                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Auto SL</h6></th>
-                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Quick Exit</h6></th>
-                        </tr>
-                      </thead>
-                      <tbody id="positionsTableBody">
-                        {% for user in allusers %}
-                        <tr>
-                          <td class="border-bottom-0">
-                            <h6 class="fw-semibold mb-0">{{ user.username }}</h6>
-                          </td>
-                          <td class="border-bottom-0">
-                            <span class="badge {% if user.status %}bg-success{% else %}badgclr{% endif %} rounded-3 fw-semibold">
-                              {% if user.status %}Active{% else %}Inactive{% endif %}
-                            </span>
-                          </td>
-                          <td class="border-bottom-0">
-                            <span class="badge bg-primary rounded-3 fw-semibold">
-                              {{ user.reserved_trade_count }}
-                            </span>
-                          </td>
-                          <td class="border-bottom-0">
-                            <span class="badge {% if user.kill_switch_1 %}bg-danger{% else %}bg-success{% endif %} rounded-3 fw-semibold">
-                              {% if user.kill_switch_1 %}Activated{% else %}Monitoring{% endif %}
-                            </span>
-                          </td>
-                          <td class="border-bottom-0">
-                            <span class="badge {% if user.kill_switch_2 %}bg-danger{% else %}bg-success{% endif %} rounded-3 fw-semibold">
-                              {% if user.kill_switch_2 %}Activated{% else %}Monitoring{% endif %}
-                            </span>
-                          </td>
-
-                          <td class="border-bottom-0">
-                            <span class="badge {% if user.auto_stop_loss %}bg-success{% else %}badgclr{% endif %} rounded-3 fw-semibold">
-                              {% if user.auto_stop_loss %}Enabled{% else %}Disabled{% endif %}
-                            </span>
-                          </td>
-                          <td class="border-bottom-0">
-                            <span class="badge {% if user.quick_exit %}bg-success{% else %}badgclr{% endif %} rounded-3 fw-semibold">
-                              {% if user.quick_exit %}Enabled{% else %}Disabled{% endif %}
-                            </span>
-                          </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                          <td colspan="5" class="text-center fw-semibold">No Active Users Found</td>
-                        </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>              
-            </div>
-
-            
-  
-            <div class="col-lg-7 d-flex align-items-stretch">
-              <div class="card w-100">
-                  <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                      <h5 class="card-title fw-semibold mb-0">Recent Transactions </h5>
-                      <!-- Pagination Controls -->
-                      <div class="pagination-controls d-flex align-items-center">
-                          <button id="prevPage" class="btn btn-primary rounded-circle me-2">‹</button>
-                          <span id="pageInfo" class="mx-2"></span>
-                            <button id="nextPage" class="btn btn-primary rounded-circle">›</button>
-                        </div>
-                    </div>
-                      <div class="table-responsive">
-                          <table class="table text-nowrap mb-0 align-middle">
-                            <table class="table">
-                              <thead class="text-grey fs-4">
-                                  <tr>
-                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Symbol</h6></th>
-                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Status</h6></th>
-                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Transaction</h6></th>
-                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Type</h6></th>
-                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Quantity</h6></th>
-                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Price</h6></th>
-                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Order Time</h6></th>
-                                  </tr>
-                              </thead>
-                              <tbody id="ordersTableBody">
-                                {% if orderlistdata.data.errorType %}
-                                <div class="alert alert-danger alert-dark-mode alert-dismissible text-center" role="alert">
-                                  <strong>Error:</strong> {{ orderlistdata.data.errorMessage }}
-                                </div>
-                            {% else %}
-                                {% for order in orderlistdata.data %}
-                                    <tr>
-                                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">{{ order.tradingSymbol }}</h6></td>
-                                        <td class="border-bottom-0">
-                                            {% if order.orderStatus == 'TRADED' %}
-                                                <span class="badge bg-success rounded-3 fw-semibold">TRADED</span>
-                                            {% elif order.orderStatus == 'CANCELLED' %}
-                                                <span class="badge bg-danger rounded-3 fw-semibold">CANCELLED</span>
-                                            {% elif order.orderStatus == 'REJECTED' %}
-                                                <span class="badge bg-danger rounded-3 fw-semibold">REJECTED</span>
-                                            {% else %}
-                                                <span class="badge bg-warning rounded-3 fw-semibold">{{ order.orderStatus }}</span>
-                                            {% endif %}
-                                        </td>
-                            
-                                        <td class="border-bottom-0">
-                                            {% if order.transactionType == 'BUY' %}
-                                                <p class="badge bg-success rounded-3 fw-semibold">{{ order.transactionType }}</p>
-                                            {% else %}
-                                                <p class="badge bg-danger rounded-3 fw-semibold">{{ order.transactionType }}</p>
-                                            {% endif %}
-                                        </td>
-                                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">{{ order.orderType }}</h6></td>
-                                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">{{ order.quantity }}</h6></td>
-                                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0 fs-4">₹{{ order.price|floatformat:2 }}</h6></td>
-                                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">{{ order.createTime }}</h6></td>
-                                    </tr>
-                                {% empty %}
-                                    <tr>
-                                        <td colspan="7" class="text-center fw-semibold">No Orders Found</td>
-                                    </tr>
-                                {% endfor %}
-                            {% endif %}
-                            
-                              </tbody>
-                          </table>
-                          </table>
-                      </div>
-                  </div>
-              </div>
-          </div>
-          {% endif %}
-        {% endblock %}
-        <div class="py-6 px-6 text-center">
-          <p class="mb-0 fs-4">Design and Developed by <a href="https://adminmart.com/" target="_blank" class="pe-1 text-primary text-decoration-underline">TradingWitch</a> Distributed by <a href="https://themewagon.com">TradingWitch</a></p>
-        </div>
+      <!-- Footer -->
+      <div class="py-6 px-6 text-center">
+        <p class="mb-0 fs-4">Design and Developed by <a href="#" target="_blank" class="pe-1 text-primary text-decoration-underline">TradingWitch</a></p>
       </div>
     </div>
   </div>
- 
-  {% comment %} <script>
-      var domain =  window.location.hostname;
-      var lastKeyword = '{{ user.username }}'; 
-      var socketIndex = new WebSocket("wss://" + domain + "/ws/order_updates/" + lastKeyword + "/");
 
-      socketIndex.onopen = function() {
-          console.log("WebSocket connection established");
-          // Optionally, send a message or initialization request here if needed
-      };
-
-      socketIndex.onmessage = function(event) {
-          const data = JSON.parse(event.data);
-          
-          // Check if the data is valid and structured correctly
-          if (data && data.Data && data.Type === "order_alert") {
-              const { Status, Price, Quantity, TradedQty, Symbol, OrderNo } = data.Data;
-
-              // Update the card elements with the received data
-              document.getElementById('status-value').innerText = Price ? `₹ ${Price.toFixed(2)}` : '0.00';
-              document.getElementById('order-details').innerText = `Order No: ${OrderNo || 'N/A'}, Symbol: ${Symbol || 'N/A'}, Quantity: ${Quantity || 'N/A'}, Traded Quantity: ${TradedQty || 'N/A'}`;
-              document.getElementById('another-detail').innerText = `Status: ${Status || 'N/A'}`;
-              document.getElementById('action-value').innerText = Status === "Cancelled" ? "Reorder" : "Update"; // Change based on status
-              
-              // Ensure the action button is visible
-              const actionButton = document.getElementById('action-button');
-              actionButton.style.display = 'block'; // Show button
-              actionButton.innerText = Status === "Cancelled" ? "Reorder" : "Update"; // Update button text accordingly
-
-          } else {
-              // Reset to default state if no valid data is received
-              resetCardToDefault();
-          }
-      };
-
-      socketIndex.onclose = function(event) {
-          console.log("WebSocket connection closed", event.reason);
-          // Optionally, implement reconnection logic here
-      };
-
-      socketIndex.onerror = function(error) {
-          console.error("WebSocket error:", error);
-          // Handle error appropriately, e.g., show an error message to the user
-      };
-
-      function resetCardToDefault() {
-          document.getElementById('status-value').innerText = '0.00';
-          document.getElementById('order-details').innerText = 'No order details available.';
-          document.getElementById('another-detail').innerText = 'No additional details available.';
-          document.getElementById('action-value').innerText = 'N/A';
-          
-          // Hide the button if there's no data
-          const actionButton = document.getElementById('action-button');
-          actionButton.style.display = 'none';
-      }
-  </script> {% endcomment %}
-
-
-    
+  <!-- Base Scripts -->
   <script src="{% static 'dashboard/assets/libs/jquery/dist/jquery.min.js' %}"></script>
   <script src="{% static 'dashboard/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'dashboard/assets/js/sidebarmenu.js' %}"></script>
   <script src="{% static 'dashboard/assets/js/app.min.js' %}"></script>
   <script src="{% static 'dashboard/assets/libs/apexcharts/dist/apexcharts.min.js' %}"></script>
-    <!-- Optional JS files block -->
-    {% block optional_js %}
 
-          <!--  Header End -->
-          <style>
-            .clock {
-              font-size: .7rem;
-              border: 2px solid #c6c6c8;
-              padding: 9px 15px;
-              border-radius: 5px;
-              
-          }
-          #time, #remainingTime {
-            display: inline-block;
-            margin-inline:5px;
-            font-weight: 1000;
-          }
-          
-          
-  
-  
-        </style>
-
-        
-        <script>
-          function activateKillSwitch() {
-                // Get the username from the button's value attribute
-                const username = document.getElementById('activateKillButton').value;
-
-                fetch('/activate_kill_switch/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username: username })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Create a toast element
-                    const toastContainer = document.querySelector('.toast-container');
-                    const toast = document.createElement('div');
-                    toast.className = `toast align-items-center text-bg-${data.message ? 'success' : 'danger'} border-0`;
-                    toast.role = 'alert';
-                    toast.ariaLive = 'assertive';
-                    toast.ariaAtomic = 'true';
-                    toast.dataset.bsDelay = '3000';
-                    toast.innerHTML = `
-                        <div class="d-flex">
-                            <div class="toast-body">
-                                ${data.message ? data.message : 'Error: ' + data.error}
-                            </div>
-                            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                        </div>
-                    `;
-
-                    // Append the toast to the toast container
-                    toastContainer.appendChild(toast);
-
-                    // Show the toast
-                    const toastInstance = new bootstrap.Toast(toast);
-                    toastInstance.show();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-
-                    // Handle error toast
-                    const toastContainer = document.querySelector('.toast-container');
-                    const toast = document.createElement('div');
-                    toast.className = 'toast align-items-center text-bg-danger border-0';
-                    toast.role = 'alert';
-                    toast.ariaLive = 'assertive';
-                    toast.ariaAtomic = 'true';
-                    toast.dataset.bsDelay = '3000';
-                    toast.innerHTML = `
-                        <div class="d-flex">
-                            <div class="toast-body">
-                                Error: ${error.message}
-                            </div>
-                            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                        </div>
-                    `;
-
-                    // Append the error toast to the toast container
-                    toastContainer.appendChild(toast);
-
-                    // Show the error toast
-                    const toastInstance = new bootstrap.Toast(toast);
-                    toastInstance.show();
-                });
-            }
-        </script>
-
-        <script>
-        // Function to handle UseRTC action
-        function useRTCAction() {
-          // Get the username from the button's value attribute
-          const username = document.getElementById('useRTCButton').value;
-
-          fetch('/use_rtc_action/', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ username: username })
-          })
-          .then(response => response.json())
-          .then(data => {
-              // Create a toast element for success or error message
-              const toastContainer = document.querySelector('.toast-container');
-              const toast = document.createElement('div');
-              toast.className = `toast align-items-center text-bg-${data.message ? 'success' : 'danger'} border-0`;
-              toast.role = 'alert';
-              toast.ariaLive = 'assertive';
-              toast.ariaAtomic = 'true';
-              toast.dataset.bsDelay = '3000';
-              toast.innerHTML = `
-                  <div class="d-flex">
-                      <div class="toast-body">
-                          ${data.message ? data.message : 'Error: ' + data.error}
-                      </div>
-                      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                  </div>
-              `;
-
-              // Append the toast to the toast container
-              toastContainer.appendChild(toast);
-
-              // Show the toast
-              const toastInstance = new bootstrap.Toast(toast);
-              toastInstance.show();
-
-              // If the action was successful, reload the page
-              if (data.status === "success") {
-                  setTimeout(() => location.reload(), 2000);  // Reload page after 2 seconds
-              }
-          })
-          .catch(error => {
-              console.error('Error:', error);
-
-              // Handle error toast
-              const toastContainer = document.querySelector('.toast-container');
-              const toast = document.createElement('div');
-              toast.className = 'toast align-items-center text-bg-danger border-0';
-              toast.role = 'alert';
-              toast.ariaLive = 'assertive';
-              toast.ariaAtomic = 'true';
-              toast.dataset.bsDelay = '3000';
-              toast.innerHTML = `
-                  <div class="d-flex">
-                      <div class="toast-body">
-                          Error: ${error.message}
-                      </div>
-                      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                  </div>
-              `;
-
-              // Append the error toast to the toast container
-              toastContainer.appendChild(toast);
-
-              // Show the error toast
-              const toastInstance = new bootstrap.Toast(toast);
-              toastInstance.show();
-          });
-
-          // Close the modal after the action (confirm or cancel)
-            const modal = new bootstrap.Modal(document.getElementById('useRTCModal'));
-            modal.hide();  // This will hide the modal
-          }
-
-            // Attach the event listener for the confirmation button in the modal
-            document.getElementById('confirmUseRTC').addEventListener('click', useRTCAction);
-
-            // Also close the modal on cancel (button with data-bs-dismiss="modal")
-            document.querySelector('.btn-secondary[data-bs-dismiss="modal"]').addEventListener('click', () => {
-              const modal = new bootstrap.Modal(document.getElementById('useRTCModal'));
-              modal.hide();  // This will hide the modal on cancel
-        });
-
-        </script>
-        
-        
-
-
-
-        <script>
-          // JavaScript Pagination Logic
-          document.addEventListener('DOMContentLoaded', function() {
-              const rowsPerPage = 6; // Number of rows per page
-              const tableBody = document.getElementById('ordersTableBody');
-              const rows = tableBody.getElementsByTagName('tr');
-              const totalRows = rows.length;
-              let currentPage = 1;
-              let totalPages = Math.ceil(totalRows / rowsPerPage);
-    
-              // Display page info
-              const pageInfo = document.getElementById('pageInfo');
-              pageInfo.innerText = `Page ${currentPage} of ${totalPages}`;
-    
-              // Function to display a specific page
-              function displayPage(page) {
-                  // Hide all rows
-                  for (let i = 0; i < totalRows; i++) {
-                      rows[i].style.display = 'none';
-                  }
-    
-                  // Display the rows for the current page
-                  let start = (page - 1) * rowsPerPage;
-                  let end = Math.min(start + rowsPerPage, totalRows);
-                  for (let i = start; i < end; i++) {
-                      rows[i].style.display = '';
-                  }
-    
-                  // Update page info
-                  pageInfo.innerText = `Page ${page} of ${totalPages}`;
-              }
-    
-              // Initial display
-              displayPage(currentPage);
-    
-              // Pagination controls
-              document.getElementById('prevPage').addEventListener('click', function() {
-                  if (currentPage > 1) {
-                      currentPage--;
-                      displayPage(currentPage);
-                  }
-              });
-    
-              document.getElementById('nextPage').addEventListener('click', function() {
-                  if (currentPage < totalPages) {
-                      currentPage++;
-                      displayPage(currentPage);
-                  }
-              });
-          });
-    
-          const rowsPerPage = 7;
-          let currentPage = 1;
-    
-          const tableBody = document.getElementById('positionsTableBody');
-          const prevButton = document.getElementById('prevPagepos');
-          const nextButton = document.getElementById('nextPagepos');
-          const pageInfo = document.getElementById('pageInfopos');
-    
-          function displayTable() {
-            const rows = tableBody.getElementsByTagName('tr');
-            const totalPages = Math.ceil(rows.length / rowsPerPage);
-    
-            // Hide all rows initially
-            for (let i = 0; i < rows.length; i++) {
-              rows[i].style.display = 'none';
-            }
-    
-            // Calculate the start and end index for the current page
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = Math.min(start + rowsPerPage, rows.length);
-    
-            // Display rows for the current page
-            for (let i = start; i < end; i++) {
-              rows[i].style.display = '';
-            }
-    
-            {% comment %} // Update pagination controls
-            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-            prevButton.disabled = currentPage === 1;
-            nextButton.disabled = currentPage === totalPages || totalPages === 0; {% endcomment %}
-          }
-    
-          // Event listeners for pagination buttons
-          prevButton.addEventListener('click', () => {
-            if (currentPage > 1) {
-              currentPage--;
-              displayTable();
-            }
-          });
-    
-          nextButton.addEventListener('click', () => {
-            const totalRows = tableBody.getElementsByTagName('tr').length;
-            const totalPages = Math.ceil(totalRows / rowsPerPage);
-            if (currentPage < totalPages) {
-              currentPage++;
-              displayTable();
-            }
-          });
-    
-          // Initial display of the table
-          displayTable();
-    
-      </script>
-      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          // Select the "Activate Kill" button and modal confirm button
-          const activateKillButton = document.getElementById('activateKillButton');
-          const confirmActionButton = document.getElementById('confirmAction');
-          
-          // Show the confirmation modal when "Activate Kill" button is clicked
-          activateKillButton.addEventListener('click', function() {
-            const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-            confirmationModal.show();
-          });
-      
-          // Perform the "Activate Kill" action on confirmation
-          confirmActionButton.addEventListener('click', function() {
-            // Custom action for the "Activate Kill" button
-            console.log("Kill switch activated.");
-            activateKillSwitch(); //
-            
-            // Add further actions here, such as making an AJAX request or redirecting
-      
-            // Hide the modal after confirming
-            const confirmationModal = bootstrap.Modal.getInstance(document.getElementById('confirmationModal'));
-            confirmationModal.hide();
-          });
-        });
-      </script>
-      <script>
-        // JavaScript for AJAX Call
-        document.getElementById("smartExitButton").addEventListener("click", function() {
-          const username = this.getAttribute("data-username"); // Get the username from the data attribute
-          console.log("username:", username);
-      
-          // Trigger the AJAX function
-          fetch('/close-all-positions/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username: username })
-          })
-          .then(response => response.json())
-          .then(data => {
-            // Create a toast element
-            const toastContainer = document.querySelector('.toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast align-items-center text-bg-${data.message ? 'success' : 'danger'} border-0`;
-            toast.role = 'alert';
-            toast.ariaLive = 'assertive';
-            toast.ariaAtomic = 'true';
-            toast.dataset.bsDelay = '3000';
-            toast.innerHTML = `
-              <div class="d-flex">
-                <div class="toast-body">
-                  ${data.message ? data.message : 'Error: ' + data.error}
-                </div>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-              </div>
-            `;
-      
-            // Append the toast to the toast container
-            toastContainer.appendChild(toast);
-            
-            // Show the toast
-            const toastInstance = new bootstrap.Toast(toast);
-            toastInstance.show();
-      
-            console.log("Sell Order Response:", data.response);
-          })
-          .catch(error => {
-            console.error("Error:", error);
-            // Handle error toast
-            const toastContainer = document.querySelector('.toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast align-items-center text-bg-danger border-0';
-            toast.role = 'alert';
-            toast.ariaLive = 'assertive';
-            toast.ariaAtomic = 'true';
-            toast.dataset.bsDelay = '3000';
-            toast.innerHTML = `
-              <div class="d-flex">
-                <div class="toast-body">
-                  Error: ${error.message}
-                </div>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-              </div>
-            `;
-      
-            // Append the error toast to the toast container
-            toastContainer.appendChild(toast);
-            
-            // Show the error toast
-            const toastInstance = new bootstrap.Toast(toast);
-            toastInstance.show();
-          });
-        });
-    
-          // Track the initial status
-          let previousStatus = null;
-      
-          function checkStatus() {
-            const username = "{{ user.username }}";  // Get the username from Django template context
-            
-            $.ajax({
-                url: "{% url 'check_log_status' %}?username=" + encodeURIComponent(username),  // Append username as a query parameter
-                type: "GET",
-                success: function(response) {
-                    // Check the response status
-                    if (response.status === 'reload') {
-                        location.reload();  // Reload the page if there was a change in the order count
-                    } else {
-                        console.log("No change in order count, no reload needed.");
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error checking status:", error);
-                }
-            });
-        }
-      
-          // Run checkStatus every 2 seconds
-          setInterval(checkStatus, 2000);
-      </script>
-    
-     <script>
-          function updateClock() {
-            let currentTime = new Date();
-            let hours = currentTime.getHours();
-            let minutes = currentTime.getMinutes();
-            let seconds = currentTime.getSeconds();
-            let day = currentTime.getDay();
-            let meridiem = hours < 12 ? "AM" : "PM";
-        
-            // Convert to 12-hour format
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-        
-            // Add leading zeros to minutes and seconds if less than 10
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-        
-            let timeString = `${hours}:${minutes}:${seconds} ${meridiem}`;
-            document.getElementById("time").innerHTML = `<span class="time-label">TIME:</span> <span class="time-value">${timeString}</span>`;
-  
-        
-            // Check if it's Monday to Friday and before 3:00 PM
-            if (day >= 1 && day <= 5 && ((currentTime.getHours() > 9 || (currentTime.getHours() === 9 && currentTime.getMinutes() >= 15)) && (currentTime.getHours() < 15 || (currentTime.getHours() === 15 && currentTime.getMinutes() <= 30)))) {
-                // Calculate time remaining until 3:00 PM
-                let endTime = new Date(currentTime);
-                endTime.setHours(15, 30, 0, 0); // Set end time to 3:00 PM
-        
-                let remainingTime = endTime - currentTime; // Calculate the difference in milliseconds
-                let remainingHours = Math.floor((remainingTime % 86400000) / 3600000); // Hours left
-                let remainingMinutes = Math.floor((remainingTime % 3600000) / 60000); // Minutes left
-                let remainingSeconds = Math.floor((remainingTime % 60000) / 1000); // Seconds left
-        
-                // Format remaining time with leading zeros
-                remainingHours = remainingHours < 10 ? "0" + remainingHours : remainingHours;
-                remainingMinutes = remainingMinutes < 10 ? "0" + remainingMinutes : remainingMinutes;
-                remainingSeconds = remainingSeconds < 10 ? "0" + remainingSeconds : remainingSeconds;
-        
-                document.getElementById("remainingTime").innerHTML =
-                    "Time Left: " + remainingHours + ":" + remainingMinutes + ":" + remainingSeconds;
-            } else {
-                // Market is closed
-                document.getElementById("remainingTime").innerHTML = "STATUS : Market Closed";
-            }
-        }        
-        // Update the clock every second
-        setInterval(updateClock, 1000);
-        
-        // Initial call to display the clock immediately
-        updateClock();
-        </script>
-  
-        <script>
-  
-          document.addEventListener('DOMContentLoaded', function () {
-            const sidebarCollapse = document.getElementById('sidebarCollapse'); // Sidebar close button
-            const menuIcon = document.getElementById('menuIcon'); // Menu icon button
-        
-            // Function to toggle visibility based on screen width
-            function handleResponsiveToggle() {
-                if (window.innerWidth < 1200) {
-                    sidebarCollapse.style.display = 'none'; // Hide close button
-                    menuIcon.style.display = 'block'; // Show menu icon
-                } else {
-                    sidebarCollapse.style.display = 'block'; // Show close button
-                    menuIcon.style.display = 'none'; // Hide menu icon
-                }
-            }
-        
-            // Run on page load
-            handleResponsiveToggle();
-        
-              // Listen for window resize to adjust dynamically
-              window.addEventListener('resize', handleResponsiveToggle);
-          });
-  
-  
-          document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('sidebarCollapse').addEventListener('click', function () {
-                const sidebar = document.getElementById('sidebar');
-                const menuIcon = document.getElementById('menuIcon');
-                sidebar.classList.toggle('hidden-sidebar'); // Toggles the class
-                  menuIcon.classList.remove('d-none');
-                  console.log("Sidebar toggle clicked");
-              });
-          });
-  
-          document.addEventListener('DOMContentLoaded', function () {
-            const sidebar = document.getElementById('sidebar');
-            const sidebarCollapse = document.getElementById('sidebarCollapse');
-            const menuIcon = document.getElementById('menuIcon');
-            const headerCollapse = document.getElementById('headerCollapse');
-        
-            // Hide sidebar and show menu icon
-            sidebarCollapse.addEventListener('click', function () {
-                sidebar.classList.add('hidden-sidebar'); // Hide sidebar
-                menuIcon.style.display = 'block'; // Show menu icon
-            });
-        
-            // Show sidebar and hide menu icon
-            headerCollapse.addEventListener('click', function () {
-                sidebar.classList.remove('hidden-sidebar'); // Show sidebar
-                menuIcon.style.display = 'none'; // Hide menu icon
-                menuIcon.classList.add('d-none');
-            });
-        });
-      </script>
-    <script>
-      // Add event listener to the dropdown
-      document.getElementById('userSelect').addEventListener('change', function() {
-          var selectedUser = this.value;
-          if (selectedUser) {
-              // Redirect to the dashboard for the selected user
-              window.location.href = "/dashboard/" + selectedUser + "/";
-          }
+  <!-- Base JavaScript -->
+  <script>
+    // Initialize all toasts
+    document.addEventListener('DOMContentLoaded', function() {
+      var toastElements = document.querySelectorAll('.toast');
+      toastElements.forEach(function(toastEl) {
+        var toast = new bootstrap.Toast(toastEl);
+        toast.show();
       });
-    </script>
-    <script type="application/json" id="positions-data">
-      {{ position_data_json|safe }}
-    </script>
-    <script type="application/json" id="breakup_series">
-      {{ breakup_series|safe }}
-    </script>
-    <script type="application/json" id="breakup_labels">
-      {{ breakup_labels|safe }}
-    </script>
-    <script type="application/json" id="hourly_status_data">
-      {{ hourly_status_data|safe }}
-    </script>
-    <script type="application/json" id="daily_status_data">
-      {{ daily_status_data|safe }}
-    </script>
-    <script>
-      // Initialize all toasts
-      document.addEventListener('DOMContentLoaded', function() {
-          var toastElements = document.querySelectorAll('.toast');
-          toastElements.forEach(function(toastEl) {
-              var toast = new bootstrap.Toast(toastEl);
-              toast.show();
-            });
-        });
-    </script>
-    <script src="{% static 'dashboard/assets/js/dashboard.js' %}"></script>
-    <script src="{% static 'dashboard/assets/libs/apexcharts/dist/apexcharts.min.js' %}"></script>
-    {% endblock %}
+    });
+
+    // User dropdown navigation
+    document.getElementById('userSelect')?.addEventListener('change', function() {
+      var selectedUser = this.value;
+      if (selectedUser) {
+        window.location.href = "/dashboard/" + selectedUser + "/";
+      }
+    });
+
+    // Sidebar toggle functionality
+    document.addEventListener('DOMContentLoaded', function () {
+      const sidebarCollapse = document.getElementById('sidebarCollapse');
+      const menuIcon = document.getElementById('menuIcon');
+      const sidebar = document.getElementById('sidebar');
+      const headerCollapse = document.getElementById('headerCollapse');
+
+      function handleResponsiveToggle() {
+        if (window.innerWidth < 1200) {
+          sidebarCollapse.style.display = 'none';
+          menuIcon.style.display = 'block';
+        } else {
+          sidebarCollapse.style.display = 'block';
+          menuIcon.style.display = 'none';
+        }
+      }
+
+      handleResponsiveToggle();
+      window.addEventListener('resize', handleResponsiveToggle);
+
+      sidebarCollapse?.addEventListener('click', function () {
+        sidebar.classList.toggle('hidden-sidebar');
+        if (menuIcon) menuIcon.classList.remove('d-none');
+      });
+
+      sidebarCollapse?.addEventListener('click', function () {
+        sidebar.classList.add('hidden-sidebar');
+        if (menuIcon) menuIcon.style.display = 'block';
+      });
+
+      headerCollapse?.addEventListener('click', function () {
+        sidebar.classList.remove('hidden-sidebar');
+        if (menuIcon) {
+          menuIcon.style.display = 'none';
+          menuIcon.classList.add('d-none');
+        }
+      });
+    });
+  </script>
+
+  {% block extra_js %}{% endblock %}
 </body>
 </html>
-
-

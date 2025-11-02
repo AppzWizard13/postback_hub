@@ -6,7 +6,9 @@
     <div class="col-lg-12 d-flex align-items-stretch">
         <div class="card w-100">
           <div class="card-body p-4" style="height:100vh">
-            <h5 class="card-title fw-semibold mb-4">Control Settings</h5>
+              <div class="card-header bg-dark text-white">
+                  <h6 class="mb-0">Control Settings</h6>
+              </div>
             <div class="table-responsive">
               <table class="table  text-nowrap mb-0 align-middle">
                 <thead class="text-dark fs-4">
@@ -21,41 +23,24 @@
                       <h6 class="fw-semibold mb-0">User</h6>
                     </th>
                     <th class="border-bottom-0">
-                      <h6 class="fw-semibold mb-0">Max Order Limit</h6>
+                      <h6 class="fw-semibold mb-0">Order Limit First</h6>
                     </th>
                     <th class="border-bottom-0">
-                      <h6 class="fw-semibold mb-0">Peak Order Limit</h6>
+                      <h6 class="fw-semibold mb-0">Order Limit Second</h6>
                     </th>
                     <th class="border-bottom-0">
-                      <h6 class="fw-semibold mb-0">Default Peak Order Limit</h6>
-                    </th>
+                      <h6 class="fw-semibold mb-0">Default Order Limit Second</h6>
+                    </th> 
                     <th class="border-bottom-0">
                       <h6 class="fw-semibold mb-0">SL Percenatge</h6>
                     </th>
                     <th class="border-bottom-0">
                       <h6 class="fw-semibold mb-0">Max Lot Size Limit</h6>
-                    </th>
+                    </th> 
                     <th class="border-bottom-0">
                         <h6 class="fw-semibold mb-0">Max Order Count Mode</h6>
                     </th>
-                    <th class="border-bottom-0">
-                      <h6 class="fw-semibold mb-0">Max Lot Size Mode</h6>
-                  </th>
-                    <th class="border-bottom-0">
-                      <h6 class="fw-semibold mb-0">Max Loss Limit</h6>
-                    </th>
-                    <th class="border-bottom-0">
-                      <h6 class="fw-semibold mb-0">Peak Loss Limit</h6>
-                    </th>
-                    <th class="border-bottom-0">
-                      <h6 class="fw-semibold mb-0">Max Profit Limit</h6>
-                    </th>
-                    <th class="border-bottom-0">
-                      <h6 class="fw-semibold mb-0">Max Loss Mode</h6>
-                    </th>
-                    <th class="border-bottom-0">
-                      <h6 class="fw-semibold mb-0">Max Profit Mode</h6>
-                    </th>
+
                   </tr>
                 </thead>
                 <tbody>
@@ -71,13 +56,13 @@
                         <h6 class="fw-semibold mb-1">{{ control.user.username }}</h6>
                     </td>
                     <td class="border-bottom-0">
-                      <p class="mb-0 fw-normal">{{ control.max_order_limit }}</p>
+                      <p class="mb-0 fw-normal">{{ control.order_limit_first }}</p>
                     </td>
                     <td class="border-bottom-0">
-                      <p class="mb-0 fw-normal">{{ control.peak_order_limit }}</p>
+                      <p class="mb-0 fw-normal">{{ control.order_limit_second }}</p>
                     </td>
                     <td class="border-bottom-0">
-                      <p class="mb-0 fw-normal">{{ control.default_peak_order_limit }}</p>
+                      <p class="mb-0 fw-normal">{{ control.default_order_limit_second }}</p>
                     </td>
                     <td class="border-bottom-0">
                       <p class="mb-0 fw-normal">{{ control.stoploss_parameter }}</p>
@@ -88,24 +73,7 @@
                     <td class="border-bottom-0">
                       <p class="mb-0 fw-normal">{{ control.max_order_count_mode|yesno:"Enabled,Disabled" }}</p>
                     </td>
-                    <td class="border-bottom-0">
-                      <p class="mb-0 fw-normal">{{ control.max_lot_size_mode|yesno:"Enabled,Disabled" }}</p>
-                    </td>
-                    <td class="border-bottom-0">
-                      <p class="mb-0 fw-normal">{{ control.max_loss_limit }}</p>
-                    </td>
-                    <td class="border-bottom-0">
-                      <p class="mb-0 fw-normal">{{ control.peak_loss_limit }}</p>
-                    </td>
-                    <td class="border-bottom-0">
-                      <p class="mb-0 fw-normal">{{ control.max_profit_limit }}</p>
-                    </td>
-                    <td class="border-bottom-0">
-                        <p class="mb-0 fw-normal">{{ control.max_loss_mode|yesno:"Enabled,Disabled" }}</p>
-                      </td>
-                    <td class="border-bottom-0">
-                      <p class="mb-0 fw-normal">{{ control.max_profit_mode|yesno:"Enabled,Disabled" }}</p>
-                    </td>
+
 
                   </tr> 
                   {% empty %}

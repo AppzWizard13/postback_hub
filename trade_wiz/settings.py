@@ -11,46 +11,156 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 from pathlib import Path
 import os
+import environ
+from datetime import timedelta
 
-
-
-# Set LIVE_MODE as a variable in your code
-LIVE_MODE=False  
-
-
-
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-if LIVE_MODE:
-    from decouple import config
-    # Build paths inside the project like this: BASE_DIR / 'subdir'
-    # SECURITY WARNING: keep the secret key used in production secret!
-    SECRET_KEY = 'django-insecure-f-lro%0yj$70!j=-abx!**fm058-xn!3m*$#q05awh=9b^1b8j'
-    DEBUG = config('DEBUG', default=False, cast=bool)
-    TESTMODE = config('TESTMODE', default=False, cast=bool)
-    LIVEDB = config('LIVEDB', default=False, cast=bool)
-    TESTKEY = config('TESTKEY', default=False, cast=bool)
 
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = env('DJANGO_SECRET_KEY', default='django-insecure-g_jp(cx#le7y&a$sd^7yyzh&#7ux)(71kgvd2@@+v&@4xp=w$q')
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = env('DEBUG', default=True)
+
+print("DEBUG MODE IS:", DEBUG)
+
+# ALLOWED_HOSTS - uses automatically set RENDER_EXTERNAL_HOSTNAME
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME', default=None)
+DOCKER_ENABLED = os.environ.get('DOCKER_ENABLED', default=None)
+
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME]  # Auto-populated by Render
 else:
-    from decouple import Config, RepositoryEnv
-    DOTENV_FILE = '.envtest'
-    env_config = Config(RepositoryEnv(DOTENV_FILE))
-    # Quick-start development settings - unsuitable for production
-    # SECURITY WARNING: keep the secret key used in production secret!
-    SECRET_KEY = 'django-insecure-f-lro%0yj$70!j=-abx!**fm058-xn!3m*$#q05awh=9b^1b8j'
-    DEBUG = env_config.get('DEBUG', default=False, cast=bool)
-    LIVEDB = env_config.get('LIVEDB', default=False, cast=bool)
-    TESTMODE = env_config.get('TESTMODE', default=False, cast=bool)
+    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1').split(',')
 
-
-
-
+# Override for development
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['https://tradewiz-2kym.onrender.com', "http://localhost:8001", "http://127.0.0.1:8001","https://tradewiz.onrender.com"]
+CSRF_TRUSTED_ORIGINS = [
+    'https://tradewiz-2kym.onrender.com',
+    "http://localhost:8001",
+    "http://127.0.0.1:8001",
+    "https://tradewiz.onrender.com",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000"
+]
 
-# Application definition
+# ============================================
+# DATABASE CONFIGURATION
+# ============================================
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+USE_POSTGRES = (RENDER_EXTERNAL_HOSTNAME and not DEBUG) or (DOCKER_ENABLED and not RENDER_EXTERNAL_HOSTNAME)
+
+print("USE_POSTGRES:", USE_POSTGRES)
+
+if USE_POSTGRES:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('POSTGRES_DATABASE'),
+            'USER': env('POSTGRES_USER'),
+            'PASSWORD': env('POSTGRES_PASSWORD'),
+            'HOST': env('POSTGRES_HOST'),
+            'PORT': env('POSTGRES_PORT'),
+            'CONN_MAX_AGE': 600,  # Connection pooling
+            'OPTIONS': {
+                'connect_timeout': 10,
+            }
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+# ============================================
+# CACHING CONFIGURATION
+# ============================================
+
+# Determine Redis host based on environment
+if DOCKER_ENABLED:
+    REDIS_HOST = 'redis'  # Docker service name
+    REDIS_PORT = 6379
+else:
+    REDIS_HOST = env('REDIS_HOST', default='127.0.0.1')
+    REDIS_PORT = env('REDIS_PORT', default=6379)
+
+print(f"REDIS HOST: {REDIS_HOST}:{REDIS_PORT}")
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'SOCKET_CONNECT_TIMEOUT': 5,
+            'SOCKET_TIMEOUT': 5,
+            'CONNECTION_POOL_KWARGS': {
+                'max_connections': 50,
+                'retry_on_timeout': True
+            },
+            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
+            'IGNORE_EXCEPTIONS': True,  # Don't break if Redis is down
+        },
+        'KEY_PREFIX': 'tradewiz',
+        'TIMEOUT': 300,  # Default timeout: 5 minutes
+    },
+    # Session cache (faster than database)
+    'session': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/2',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        },
+        'KEY_PREFIX': 'session',
+        'TIMEOUT': 86400,  # 24 hours
+    },
+    # Template cache
+    'template': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/3',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        },
+        'KEY_PREFIX': 'template',
+        'TIMEOUT': 3600,  # 1 hour
+    },
+}
+
+# Use Redis for sessions (much faster than database)
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'session'
+SESSION_COOKIE_AGE = 86400  # 24 hours
+
+# Cache timeout configurations
+CACHE_TIMEOUTS = {
+    'ORDER_DATA': 30,        # 30 seconds
+    'MARKET_DATA': 60,       # 1 minute
+    'USER_LIST': 300,        # 5 minutes
+    'STATISTICS': 300,       # 5 minutes
+    'CONTROL_DATA': 600,     # 10 minutes
+    'USER_PROFILE': 1800,    # 30 minutes
+    'SYSTEM_CONFIG': 3600,   # 1 hour
+}
+
+# ============================================
+# APPLICATION DEFINITION
+# ============================================
+
 INSTALLED_APPS = [
     'account',
+    'reports',
+    'core',
     'scheduler',
     'channels',
     'django.contrib.admin',
@@ -59,38 +169,55 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_redis',  # Add django-redis
 ]
 
 # Specify ASGI application
 ASGI_APPLICATION = 'trade_wiz.asgi.application'
 
-# Channels layer settings
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # You can use Redis for production
-    },
-}
+# Channels layer settings - Use Redis in production
+if DOCKER_ENABLED or RENDER_EXTERNAL_HOSTNAME:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [(REDIS_HOST, REDIS_PORT)],
+            },
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        },
+    }
 
-APPEND_SLASH=False
-
+APPEND_SLASH = False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',  # Cache middleware (first)
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',  # Cache middleware (last)
 ]
 
-ROOT_URLCONF = 'trade_wiz.urls'
+# Cache middleware settings
+CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_SECONDS = 300  # 5 minutes
+CACHE_MIDDLEWARE_KEY_PREFIX = 'page'
 
+ROOT_URLCONF = 'trade_wiz.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -103,56 +230,12 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = 'trade_wiz.wsgi.application'
 AUTH_USER_MODEL = 'account.User'
 
-# LIVEDB = True
-
-if LIVEDB == True:
-    DB_NAME='tradewiz_live_db1'
-    DB_USER='tradewiz_live_db1_user'
-    DB_PASSWORD='KxWbwNqKAfhGLLJ77sM7Y2HrgU3rCHTW'
-    DB_HOST='dpg-ctv0f4ogph6c73asead0-a.oregon-postgres.render.com'
-    DB_PORT=5432
-
-# Database
-# Conditional database configuration based on DEBUG mode
-if LIVEDB == True:
-    # Database configuration
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': DB_NAME,
-            'USER': DB_USER,
-            'PASSWORD': DB_PASSWORD,
-            'HOST': DB_HOST,
-            'PORT': DB_PORT
-        }
-    }
-    # Use SQLite for development
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.sqlite3',
-    #         'NAME': BASE_DIR / 'db-live.sqlite3',
-    #     }
-    # }
-else:
-    # Use SQLite for development
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
-
-
-print("---------------------------------------------")
-print("USING DATA BASE                  :", DATABASES)
-print("---------------------------------------------")
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
+# ============================================
+# PASSWORD VALIDATION
+# ============================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -169,47 +252,113 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
+# ============================================
+# INTERNATIONALIZATION
+# ============================================
 
 LANGUAGE_CODE = 'en-us'
-
 USE_I18N = True
-
 TIME_ZONE = 'Asia/Kolkata'
-
 USE_TZ = True
 
+# ============================================
+# TRADING CONFIGURATION
+# ============================================
+
 BROKERAGE_PARAMETER = "33"
-
 TRIGGER_SLIPPAGE = "0.05"
-
-DEV_ADMIN = 'Appz'
-
+DEV_ADMIN = 'admin'
 ACTIVE_TRADER = ['juztin', 'tradingwitch']
-
 ACTING_ADMIN = 'vicky'
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
+# ============================================
+# STATIC FILES CONFIGURATION
+# ============================================
 
 STATIC_URL = '/staticfiles/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# Whitenoise settings for static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+WHITENOISE_MAX_AGE = 31536000  # 1 year caching
 
-# MEDIAFILE
+# ============================================
+# MEDIA FILES CONFIGURATION
+# ============================================
+
 MEDIA_URL = '/media/'
-
-
-MEDIA_DIRS = [ os.path.join(BASE_DIR, 'media') ]
-
+MEDIA_DIRS = [os.path.join(BASE_DIR, 'media')]
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# ============================================
+# LOGGING CONFIGURATION
+# ============================================
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'apscheduler': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+        },
+        'scheduler': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+        },
+    },
+}
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+# Create logs directory if it doesn't exist
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+if not os.path.exists(LOGS_DIR):
+    os.makedirs(LOGS_DIR)
+
+# ============================================
+# SECURITY SETTINGS
+# ============================================
+
+if not DEBUG:
+    # Security settings for production
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+# ============================================
+# DEFAULT AUTO FIELD
+# ============================================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

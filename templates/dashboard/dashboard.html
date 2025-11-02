@@ -1,0 +1,1397 @@
+{% extends 'dashboard/index.html' %}
+{% load static %}
+
+{% block title %}{{ user.username }} Dashboard - TradeWiz{% endblock %}
+
+{% block extra_css %}
+<style>
+  .alert-dark-mode {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #444;
+  }
+
+  .alert-dark-mode .btn-close {
+    color: #fff;
+  }
+
+  /* Progress bar styles */
+  .custom-progress-container {
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    margin-right: 23px;
+    font-size: 18px;
+  }
+
+  .progress {
+    background: rgb(10 10 10);
+    justify-content: space-between;
+    border-radius: 5px;
+    align-items: center;
+    position: relative;
+    padding: 0 5px;
+    display: flex;
+    height: 40px;
+    width: 300px;
+    max-width: 400px;
+    margin-bottom: 10px;
+  }
+
+  .progress-value {
+    box-shadow: 0 10px 40px -10px #fff;
+    border-radius: 5px;
+    height: 35px;
+    width: 0;
+    transition: background-color 0.3s ease;
+  }
+
+  .progress-text {
+    margin-inline: 10px;
+    color: white;
+  }
+
+  .remaining-orders {
+    color: #fff;
+    font-size: 14px;
+  }
+
+  .badgclr {
+    background: #3c3c3c;
+  }
+
+  [title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    background-color: blue;
+    color: white;
+    padding: 10px 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    white-space: nowrap;
+    z-index: 10;
+    margin-top: -50px;
+  }
+
+  .clock {
+    font-size: .7rem;
+    border: 2px solid #c6c6c8;
+    padding: 9px 15px;
+    border-radius: 5px;
+  }
+
+  #time, #remainingTime {
+    display: inline-block;
+    margin-inline: 5px;
+    font-weight: 1000;
+  }
+
+  /* Badge grid styles */
+  .badge-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: start;
+  }
+
+  .badge {
+    text-align: center;
+    font-size: 16px;
+    flex-basis: calc(4% - 8px);
+    margin-bottom: 8px;
+  }
+
+  @media screen and (max-width: 768px) {
+    .badge {
+      flex-basis: calc(10% - 8px);
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .badge {
+      flex-basis: 20%;
+    }
+  }
+
+  /* Table styles */
+  .table {
+    color: #e0e0e0;
+  }
+
+  .table thead th {
+    background-color: #1f1f1f;
+    color: #fff;
+    border-color: #444;
+  }
+
+  .table tbody td {
+    border-color: #444;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Pagination styles */
+  .pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+  }
+
+  {% comment %} .pagination-controls button {
+    min-width: 80px;
+  } {% endcomment %}
+</style>
+{% endblock %}
+{% block content %}
+
+        {{ breakup_series_json|safe }}
+
+        {{ breakup_labels_json|safe }}
+
+        
+        <div id="breakup_series" style="display:none;">
+          {{ breakup_series_json|safe }}
+        </div>
+        <div id="breakup_labels" style="display:none;">
+          {{ breakup_labels_json|safe }}
+        </div>
+        <div class="container-fluid" style="max-width: none;">
+          
+          <div class="row">
+
+            <div class="col-lg-8 d-flex align-items-strech">
+              <div class="card w-100">
+                <div class="card-body">
+                  <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
+                    <div class="mb-3 mb-sm-0">
+                      <h5 class="card-title fw-semibold">Trade Overview</h5>
+                    </div>
+                    <div class="clock">
+                      <div id="time"> - </div>
+                      <div class="vr "></div>
+                      <div id="remainingTime"> - </div>
+                    </div>
+                    <div>
+                      <select class="form-select text-white fw-bolder">
+                        <option value="1">{{current_date}}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div id="chart"></div>
+                    <div class="d-flex justify-content-between">
+                      <div class="mb-1 mb-sm-0">
+                        <span class="open_pos_label">Open Position : </span> 
+                        {% if open_position %}
+                          
+                          <button style="height: 40px; margin-top: 10px;"class="btn btn-success d-block" onclick="openPositionPopup('{{ open_position.0.securityId }}')">
+                            <i class="fs-5 dark ti ti-stairs-up text-white mx-1"></i> {{ open_position.0.tradingSymbol }}
+                          </button>
+                        {% else %}
+                          
+                          <button style="height: 40px; margin-top: 10px;"class="btn badgclr d-block disabled" tabindex="-1" aria-disabled="true">
+                            No Positions
+                          </button>
+                        {% endif %}
+                      </div>
+                      
+                       <div class="mb-3 mb-sm-0 mr-5">
+                        <span class="remaining-orders">Trades Left: &nbsp;&nbsp;  {{ remaining_trades }}</span> 
+                        <div class="custom-progress-container">
+                          
+                          <div class="progress">
+                            <div class="progress-value" style="width: {{ progress_percentage }}%; background-color: {{ progress_color }}"></div>
+                            <span class="progress-text">{{ remaining_orders }} / {{ order_limit_second }} Orders</span>
+                          </div>
+                          
+                        </div>
+                        
+                      </div> 
+                    </div>
+
+                    <style>
+
+                        .alert-dark-mode {
+                          background-color: #333;
+                          color: #fff;
+                          border: 1px solid #444;
+                      }
+                      
+                      .alert-dark-mode .btn-close {
+                          color: #fff;
+                      }
+                      /* Scoped styles for the progress bar */
+                      .custom-progress-container {
+                        font-weight: 600;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100%;
+                        background: transparent;
+                        padding: 0;
+                        margin: 0;
+                        margin-right: 23px;
+                        font-size: 18px;
+                      }
+                    
+                      /* Container for the progress bar and the order count */
+                      .progress {
+                        background: rgb(10 10 10);
+                        justify-content: space-between;
+                        border-radius: 5px;
+                        align-items: center;
+                        position: relative;
+                        padding: 0 5px;
+                        display: flex;
+                        height: 40px;
+                        width: 300px; /* Make it responsive to parent container */
+                        max-width: 400px; /* Optional max-width for better design */
+                        margin-bottom: 10px;
+                      }
+                    
+                      /* Progress bar value (dynamic background color) */
+                      .progress-value {
+                        box-shadow: 0 10px 40px -10px #fff;
+                        border-radius: 5px;
+                        height: 35px;
+                        width: 0;
+                        transition: background-color 0.3s ease; /* Smooth color transition */
+                      }
+                    
+                      /* Text for order count (will be aligned right) */
+                      .progress-text {
+                        margin-inline: 10px;
+                        color: white;
+                      }
+                    
+                      /* Remaining orders text */
+                      .remaining-orders {
+                        color: #fff;
+                        font-size: 14px;
+                      } 
+                      .badgclr{
+                        background: #3c3c3c
+                      }
+                      [title]:hover::after {
+                        content: attr(title);
+                        position: absolute;
+                        background-color: blue; /* Light background */
+                        color: white; /* Dark text */
+                        padding: 10px 10px;
+                        border-radius: 5px;
+                        font-size: 16px;
+                        white-space: nowrap;
+                        z-index: 10;
+                        margin-top:-50px;
+                    }
+                    
+                    </style>
+
+                    <script>
+                      function openPositionPopup(securityId) {
+                        const url = `https://web.dhan.co/Charts?exch=NSE&seg=D&secid=${securityId}`;
+                        window.open(url, 'PositionChartWindow', 'width=800,height=600');
+                      }
+
+                      function openStopLossPopup(securityId) {
+                        const url = `https://web.dhan.co/Charts?exch=NSE&seg=D&secid=${securityId}`;
+                        window.open(url, 'StopLossChartWindow', 'width=800,height=600');
+                      }
+                    </script>
+                </div>
+                <div class="ms-5 me-5 my-3" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: start;">
+                  {% for week in weekly_progress_data %}
+                      {% if week.status %}
+                          
+                          <span class="badge bg-grey fs-2" style="text-align: center;" title="No trade">
+                              T&nbsp;&nbsp;{{ week.serial_number }}
+                          </span>
+                      {% else %}
+                          
+                          {% if week.actual_profit < 0 %}
+                              
+                              <span class="badge bg-danger fs-2" style="text-align: center;" title="PL: {{ week.actual_profit }} on {{ week.updated_on|date:'Y-m-d' }}">
+                                  T&nbsp;&nbsp;{{ week.serial_number }}
+                              </span>
+                          {% else %}
+                              
+                              <span class="badge bg-success fs-2" style="text-align: center;" title="PL: {{ week.actual_profit }} on {{ week.updated_on|date:'Y-m-d' }}">
+                                  T&nbsp;&nbsp;{{ week.serial_number }}
+                              </span>
+                          {% endif %}
+                      {% endif %}
+                  {% endfor %}
+              </div>
+              
+              <style>
+                  /* General Flexbox Styles */
+                  .ms-5.me-5.my-3 {
+                      display: flex;
+                      flex-wrap: wrap;
+                      gap: 8px;
+                      justify-content: start;
+                  }
+              
+                  /* Badge Styling */
+                  .badge {
+                      text-align: center;
+                      font-size: 16px;
+                      flex-basis: calc(4% - 8px); /* 25 items per row */
+                      margin-bottom: 8px;  /* Space between rows */
+                  }
+              
+                  /* For smaller devices (Mobile) */
+                  @media screen and (max-width: 768px) {
+                      .badge {
+                          flex-basis: calc(10% - 8px); /* 10 items per row for smaller mobile screens */
+                      }
+                  }
+              
+                  /* For very small devices (Extra Small Mobile) */
+                  @media screen and (max-width: 480px) {
+                      .badge {
+                          flex-basis: 20%; /* 5 item per row for very small screens */
+                      }
+                  }
+              </style>
+
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="row">
+                <div class="col-lg-12">
+                  
+                  <div class="card overflow-hidden">
+                    <div class="card-body">
+                      <h5 class="card-title mb-9 fw-semibold">Account Balance</h5>
+                      <div class="row align-items-center">
+                        <div class="col-6">
+                          <h4 class="fw-semibold mb-3">₹ {{fund_data.data.availabelBalance|floatformat:2}}</h4>
+                          <div class="d-flex align-items-center mt-3">
+                            <span>
+                              <i class="fs-5 dark ti ti-coin-rupee text-primary mx-2"></i>
+                            </span>
+                            <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 50px;">SOD:</p>
+                            <div class="me-auto">
+                              <span class="badge bg-primary fs-3">₹ {{ fund_data.data.sodLimit|floatformat:2 }}</span>
+                            </div>
+                          </div>
+                          
+                          <div class="d-flex align-items-center mt-3">
+                            <div class="d-flex align-items-center mb-3">
+                              <span>
+                                <i class="fs-5 dark ti ti-coin-rupee mx-2 {% if total_realized_profit > 0 %} text-success {% elif total_realized_profit < 0 %} text-danger {% else %} text-grey {% endif %}"></i>
+                              </span>
+                              <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 50px;">EOD:</p>
+                              <div class="me-auto">
+                                <span class="badge 
+                                  {% if total_realized_profit > 0 %} bg-success {% elif total_realized_profit < 0 %} bg-danger {% else %} bg-primary {% endif %}
+                                  fs-3">₹ {{ actual_balance|floatformat:2 }}</span>
+                              </div>
+                            </div>                            
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="d-flex justify-content-center">
+                            <div id="breakup"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="row alig n-items-start">
+                        <div class="col-8">
+                          <h5 class="card-title mb-9 fw-semibold">Today Earnings</h5>
+                          <h4 class="fw-semibold mb-1">₹ {{ total_realized_profit|floatformat:2 }}</h4>
+                          
+                          <div class="d-flex align-items-center pb-1">
+                            {% if total_realized_profit > 0 %}
+                              
+                              <span >
+                                <i class="fs-5 dark ti ti-arrow-up-right text-success mx-2"></i>
+                              </span>
+                              <p class="text-success me-1 fs-3 mb-0 fw-bolder">{{pnl_percentage|floatformat:2}}&nbsp;&nbsp;%&nbsp;Profit</p>
+                            {% elif total_realized_profit < 0 %}
+                              
+                              <span >
+                                <i class="fs-5 dark ti ti-arrow-down-right text-danger mx-2"></i>
+                              </span>
+                              <p class="text-danger me-1 fs-3 mb-0 fw-bolder">{{pnl_percentage|floatformat:2}}&nbsp;&nbsp;%&nbsp;Loss</p>
+                            {% else %}
+                              
+                              <span >
+                                <i class="fs-5 dark ti ti-clock text-primary mx-2"></i>
+                              </span>
+                              <p class="text-primary me-1 fs-3 mb-3 fw-bolder" style="margin-top: 13px;">{{pnl_percentage|floatformat:2}}&nbsp;&nbsp;%&nbsp;NO Trades</p>{% endif %}
+                          </div>
+                        </div>
+                        
+                        <div class="col-4">
+                          <div class="d-flex justify-content-end">
+                            <div class="mb-3 mb-sm-0 pr-5">
+                              <a class="btn btn-primary mx-3 fs-3 fw-bold d-block" 
+                                 style="border-width: 3px; border-style: solid;">
+                                PL  &nbsp;&nbsp; {{ actual_profit|floatformat:2 }}
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mt-1" id="earning"></div>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="row align-items-start">
+                        <div class="col-8">
+                          <h5 class="card-title fw-semibold" style="margin-bottom: 30px !important;">Risk Forecast</h5>
+
+                          <div class="d-flex align-items-center mt-4">
+                            <span>
+                              <i class="fs-5 dark ti ti-coin-rupee text-success mx-2"></i>
+                            </span>
+                            <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">A / C Balance:</p>
+                            <div class="ms-auto">
+                              <span class="badge bg-primary text fs-3"> ₹ &nbsp; {{ available_balance|floatformat:2 }}</span>
+                            </div>
+                          </div>
+
+                          <div class="d-flex align-items-center mt-3">
+                            <span>
+                              <i class="fs-5 dark ti ti-coin-rupee text-warning mx-2"></i>
+                            </span>
+                            <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Trade Risk Forecast :</p>
+                            <div class="ms-auto">
+                              <span class="badge bg-danger fs-3">₹ &nbsp;&nbsp; {{ forecast_balance|floatformat:2 }}</span>
+                            </div>
+                          </div>
+
+                          <div class="d-flex align-items-center mt-3">
+                            <span>
+                              <i class="fs-5 dark ti ti-coin-rupee text-info mx-2"></i>
+                            </span>
+                            <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Day Risk Forecast:</p>
+                            <div class="ms-auto">
+                              <span class="badge badgclr fs-3">₹ &nbsp; {{ day_risk_forecast|floatformat:2 }} </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {% if daily_goal_data %}
+                        <div class="col-4">
+                          <div class="d-flex justify-content-end">
+                              <div class="mb-3 mb-sm-0 pr-5">
+                                  <a href="{% url 'view_trade_plan' daily_goal_data.plan_id %}" class="btn btn-success mx-2 fs-3 fw-bold d-block"
+                                     style="border-width: 1px; border-style: solid; cursor: pointer;">
+                                     GL &nbsp;&nbsp; {{ daily_goal_data.gained_amount }}<br>
+                                  </a>
+                              </div>
+                          </div>
+                      </div>
+
+                        {% else %}
+                        
+                        <div class="col-4">
+                          <div class="d-flex justify-content-end">
+                            <div class="mb-3 mb-sm-0 pr-5">
+                              <button class="btn btn-success mx-2 fs-3 fw-bold d-block" 
+                                      style="border-width: 1px; border-style: solid; cursor: pointer;" 
+                                      id="activateKillButton" value="{{ user.username }}">
+                                      Terminate<br>
+                                <span id="action-button" value="{{ user.username }}"></span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body fs-4">
+                                Are you sure you want to activate the kill switch?
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-danger" id="confirmAction">Activate Kill</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-4">
+              
+              <div class="card">
+                <div class="card-body">
+                  <div class="row align-items-start">
+                    <div class="col-8">
+                      <h5 class="card-title fw-semibold" style="margin-bottom: 30px !important;">Risk Overview</h5>
+
+                      <div class="d-flex align-items-center mt-4">
+                        <span>
+                          <i class="fs-5 dark ti ti-coin-rupee text-success mx-2"></i>
+                        </span>
+                        <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Risk / Trade:</p>
+                        <div class="ms-auto">
+                          <span class="badge badgclr text fs-3">{{ stoploss_parameter|floatformat:1 }} {{ stoploss_type }}</span>
+                        </div>
+                      </div>
+
+                      <div class="d-flex align-items-center mt-3">
+                        <span>
+                          <i class="fs-5 dark ti ti-coin-rupee text-warning mx-2"></i>
+                        </span>
+                        <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Risk / Day:</p>
+                        <div class="ms-auto">
+                          <span class="badge badgclr fs-3">₹ &nbsp;&nbsp; {{ max_expected_loss|floatformat:2 }}</span>
+                        </div>
+                      </div>
+
+                      <div class="d-flex align-items-center mt-3">
+                        <span>
+                          <i class="fs-5 dark ti ti-coin-rupee text-info mx-2"></i>
+                        </span>
+                        <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Max Expense:</p>
+                        <div class="ms-auto">
+                          <span class="badge badgclr fs-3">₹ &nbsp; {{ max_expected_expense|floatformat:2 }} </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-4">
+                      <div class="d-flex justify-content-end">
+                        <div class="mb-3 mb-sm-0 pr-5">
+                          <a id="smartExitButton" data-username="{{ user.username }}" 
+                             class="btn btn-primary mx-2 fs-3 fw-bold  d-block" 
+                             style="border-width: 1px; border-style: solid; cursor: pointer;">
+                             Quick&nbsp;Exit </br>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            <div class="col-lg-4">
+              
+              <div class="card">
+                <div class="card-body">
+                  <div class="row align-items-start">
+                    <div class="col-8">
+                      <h5 class="card-title fw-semibold" style="margin-bottom: 30px !important;">Service Status</h5>
+                      <div class="d-flex align-items-center mt-4">
+                        <span>
+                          <i class="fs-5 dark ti ti-power mx-2" 
+                             style="color: 
+                               {% if user.kill_switch_1 and not user.kill_switch_2 %}
+                                 orange
+                               {% elif not user.kill_switch_1 and not user.kill_switch_2 %}
+                                 green
+                               {% elif user.kill_switch_1 and user.kill_switch_2 %}
+                                 red
+                               {% endif %};"></i>
+                        </span>
+                        <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Kill Status:</p>
+                        <div class="ms-auto">
+                          {% if user.kill_switch_1 and not user.kill_switch_2 %}
+                            <span class="badge bg-warning text-grey fs-3">Activated</span>
+                          {% elif not user.kill_switch_1 and not user.kill_switch_2 %}
+                            <span class="badge bg-success fs-3">Monitoring</span>
+                          {% elif user.kill_switch_1 and user.kill_switch_2 %}
+                            <span class="badge bg-danger fs-3">Activated</span>
+                          {% endif %}
+                        </div>
+                      </div>
+
+                    <div class="d-flex align-items-center mt-3">
+                      <span>
+                        <i class="fs-5 dark ti ti-power mx-2" 
+                           style="color: {% if user.is_active %}green{% else %}orange{% endif %};"></i>
+                      </span>
+                      <p class="text-grey mx-1 fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Auto Kill:</p>
+                      <div class="ms-auto">
+                        {% if user.is_active %}
+                          <span class="badge bg-success fs-3">Active</span>
+                        {% else %}
+                          <span class="badge bg-warning fs-3">Inactive</span>
+                        {% endif %}
+                      </div>
+                    </div>
+
+                    <div class="d-flex align-items-center mt-3">
+                      {% if request.user.is_staff %}
+                        <span>
+                          <i class="fs-5 dark ti ti-stairs-down mx-2"
+                            style="color: {% if user.auto_stop_loss %}green{% else %}orange{% endif %};"></i>
+                        </span>
+                        <p class="text-grey mx-1 fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Auto SL:</p>
+                        <div class="ms-auto">
+                          {% if user.auto_stop_loss %}
+                            <span class="badge bg-success fs-3">Active</span>
+                          {% else %}
+                            <span class="badge bg-warning fs-3">Inactive</span>
+                          {% endif %}
+                        </div>
+                        {% else %}
+
+                        <span >
+                            <i class="fs-5 dark ti ti-stairs-down text-danger mx-2"></i>
+                        </span>
+                        <p class="text-grey mx-1 fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Auto Monitoring</p>
+                      
+                        <div class="ms-auto">
+                            {% if user.auto_stop_loss %}
+                                <span class="badge bg-primary fs-3">Coming Soon</span>
+                            {% else %}
+                                <span class="badge bg-primary fs-3">Coming Soon</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-4">
+              
+              <div class="card">
+                <div class="card-body">
+                  <div class="row align-items-start mt-2">
+                    <div class="col-8">
+                      <h5 class="card-title fw-semibold" style="margin-bottom: 20px !important;">Today Expense</h5>
+                      <h4 class="fw-semibold mb-4">₹ {{ total_expense|floatformat:2 }}</h4>
+
+                      <div class="d-flex align-items-center mt-3">
+                        <span>
+                          <i class="fs-5 dark ti ti-clock text-danger mx-2"></i>
+                        </span>
+                        <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Order Limit:</p>
+                        <div class="ms-auto">
+                          <span class="badge badgclr fs-3">{{ order_limit }} &nbsp;&nbsp; - &nbsp;&nbsp; {{ order_limit_second }}</span>
+                        </div>
+                      </div>
+
+                      <div class="d-flex align-items-center mt-3">
+                        <span>
+                          <i class="fs-5 dark ti ti-cash text-primary mx-2"></i>
+                        </span>
+                        <p class="text-grey fs-3 mb-0 fw-bold flex-shrink-0" style="width: 150px;">Brokerage:</p>
+                        <div class="ms-auto">
+                          <span class="badge badgclr fs-3">₹ {{ day_exp_brokerge|floatformat:2 }}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {% comment %} <div class="col-4">
+                      <div class="d-flex justify-content-end">
+                        <div class="mb-3 mb-sm-0 pr-5">
+                          <a class="btn btn-primary mx-2 fs-3 fw-bold d-block"
+                             style="border-width: 2px; border-style: solid; cursor: pointer;">
+                            Orders: {{ order_count }} - {{ actual_entry_count }}
+                          </a>
+                        </div>
+                      </div>
+                    </div> {% endcomment %}
+                  
+                  {% comment %} <div class="col-4">
+                    <div class="d-flex justify-content-end">
+                      <div class="mb-3 mb-sm-0 pr-5">
+                        <button class="btn btn-primary mx-2 fs-3 fw-bold d-block" 
+                                style="border-width: 1px; border-style: solid; cursor: pointer;" 
+                                id="useRTCButton" value="{{ user.username }}" 
+                                data-bs-toggle="modal" data-bs-target="#useRTCModal">
+                                Use&nbsp;RTC<br>
+                          <span id="action-button" value="{{ user.username }}"></span>
+                        </button>
+                      </div>
+                    </div>
+                  </div> {% endcomment %}
+
+                  {% comment %} <div class="modal fade" id="useRTCModal" tabindex="-1" aria-labelledby="useRTCModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="useRTCModalLabel">Confirm Action</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body fs-4">
+                          Are you sure you want to proceed with the UseRTC action?
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button type="button" class="btn btn-primary" id="confirmUseRTC">Confirm</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div> {% endcomment %}
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          {% comment %} <div class="row"> {% endcomment %}
+            <div class="col-lg-7 d-flex align-items-stretch">
+              <div class="card w-100">
+                <div class="card-body p-4">
+                  <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="card-title fw-semibold mb-0">Perfomance Overview</h5>
+                    <button class="fs-3 fw-bold btn btn-primary ms-auto">Accuracy : &nbsp; {{accuracy}}&nbsp; %</button>
+                  </div>
+                  <div class="col-12" style="height: 300px;">
+                    
+                    <div id="hourlyperformanceoverview" style="height: 100%; width: 100%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-lg-5 d-flex align-items-stretch">
+              <div class="card w-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                      <h5 class="card-title fw-semibold mb-0">Positions</h5>
+                      
+                      <div class="pagination-controls d-flex align-items-center">
+                          <button id="prevPagepos" class="btn btn-primary rounded-circle me-2">‹</button>
+                          <span id="pageInfopos" class="mx-2"></span>
+                            <button id="nextPagepos" class="btn btn-primary rounded-circle">›</button>
+                        </div>
+                    </div>
+                  <div class="table-responsive" style="overflow-y: auto;">
+                    <table class="table text-nowrap mb-0 align-middle" id="positionsTable">
+                      <thead class="text-grey fs-4">
+                        <tr>
+                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Chart</h6></th>
+                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Symbol</h6></th>
+                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Portfolio</h6></th>
+                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Status</h6></th>
+                          {% comment %} <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Buy Quantity</h6></th> {% endcomment %}
+                          {% comment %} <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Average Price</h6></th> {% endcomment %}
+                          
+                          {% comment %} <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Unrealized Profit</h6></th> {% endcomment %}
+                        </tr>
+                      </thead>
+                      <tbody id="positionsTableBody">
+                        {% if position_data.data.errorType %}
+                        <div class="alert alert-danger alert-dark-mode alert-dismissible text-center" role="alert">
+                          <strong>Error:</strong> {{ position_data.data.errorMessage }}
+                      </div>
+                    {% else %}
+                        {% for position in position_data.data %}
+                            <tr>
+                                <td class="border-bottom-0">
+                                    <button class="btn btn-success m-2 fs-2 d-block" onclick="openPopup('{{ position.securityId }}')">View</button>
+                                </td>
+                    
+                                <script>
+                                    function openPopup(securityId) {
+                                        const url = `https://web.dhan.co/Charts?exch=NSE&seg=D&secid=${securityId}`;
+                                        window.open(url, 'ChartWindow', 'width=800,height=600');
+                                    }
+                                </script>
+                    
+                                <td class="border-bottom-0">
+                                    <h6 class="fw-semibold mb-0">{{ position.tradingSymbol }}</h6>
+                                </td>
+                    
+                                <td class="border-bottom-0">
+                                    {% if position.realizedProfit > 0 %}
+                                        <span class="badge bg-success rounded-3 fw-semibold">₹{{ position.realizedProfit|floatformat:2 }}</span>
+                                    {% elif position.realizedProfit < 0 and position.realizedProfit > -100 %}
+                                        <span class="badge bg-warning rounded-3 fw-semibold">₹{{ position.realizedProfit|floatformat:2 }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger rounded-3 fw-semibold">₹{{ position.realizedProfit|floatformat:2 }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="border-bottom-0">
+                                    <span class="fw-normal">{{ position.positionType }}</span>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center fw-semibold">No Positions Found</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+           {% if request.user.is_staff %}
+            <div class="col-lg-5 d-flex align-items-stretch" >
+              <div class="card w-100">
+                <div class="card-body p-4">
+                  <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="card-title fw-semibold mb-0">Active Users</h5>
+                  </div>
+                  <div class="table-responsive" style="overflow-y: auto;">
+                    <table class="table text-nowrap mb-0 align-middle" id="positionsTable">
+                      <thead class="text-grey fs-4">
+                        <tr>
+                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Username</h6></th>
+                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Status</h6></th>
+                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Kill Status 1</h6></th>
+                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Kill Status 2</h6></th>
+                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Auto SL</h6></th>
+                          <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Quick Exit</h6></th>
+                        </tr>
+                      </thead>
+                      <tbody id="positionsTableBody">
+                        {% for user in allusers %}
+                        <tr>
+                          <td class="border-bottom-0">
+                            <h6 class="fw-semibold mb-0">{{ user.username }}</h6>
+                          </td>
+                          <td class="border-bottom-0">
+                            <span class="badge {% if user.status %}bg-success{% else %}badgclr{% endif %} rounded-3 fw-semibold">
+                              {% if user.status %}Active{% else %}Inactive{% endif %}
+                            </span>
+                          </td>
+
+                          <td class="border-bottom-0">
+                            <span class="badge {% if user.kill_switch_1 %}bg-danger{% else %}bg-success{% endif %} rounded-3 fw-semibold">
+                              {% if user.kill_switch_1 %}Active{% else %}Monitoring{% endif %}
+                            </span>
+                          </td>
+                          <td class="border-bottom-0">
+                            <span class="badge {% if user.kill_switch_2 %}bg-danger{% else %}bg-success{% endif %} rounded-3 fw-semibold">
+                              {% if user.kill_switch_2 %}Active{% else %}Monitoring{% endif %}
+                            </span>
+                          </td>
+
+                          <td class="border-bottom-0">
+                            <span class="badge {% if user.auto_stop_loss %}bg-success{% else %}badgclr{% endif %} rounded-3 fw-semibold">
+                              {% if user.auto_stop_loss %}Enabled{% else %}Disabled{% endif %}
+                            </span>
+                          </td>
+                          <td class="border-bottom-0">
+                            <span class="badge {% if user.quick_exit %}bg-success{% else %}badgclr{% endif %} rounded-3 fw-semibold">
+                              {% if user.quick_exit %}Enabled{% else %}Disabled{% endif %}
+                            </span>
+                          </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                          <td colspan="5" class="text-center fw-semibold">No Active Users Found</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>              
+            </div>
+
+            <div class="col-lg-7 d-flex align-items-stretch">
+              <div class="card w-100">
+                  <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                      <h5 class="card-title fw-semibold mb-0">Recent Transactions </h5>
+                      
+                      <div class="pagination-controls d-flex align-items-center">
+                          <button id="prevPage" class="btn btn-primary rounded-circle me-2">‹</button>
+                          <span id="pageInfo" class="mx-2"></span>
+                            <button id="nextPage" class="btn btn-primary rounded-circle">›</button>
+                        </div>
+                    </div>
+                      <div class="table-responsive">
+                          <table class="table text-nowrap mb-0 align-middle">
+                            <table class="table">
+                              <thead class="text-grey fs-4">
+                                  <tr>
+                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Symbol</h6></th>
+                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Status</h6></th>
+                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Transaction</h6></th>
+                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Type</h6></th>
+                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Quantity</h6></th>
+                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Price</h6></th>
+                                      <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Order Time</h6></th>
+                                  </tr>
+                              </thead>
+                              <tbody id="ordersTableBody">
+                                {% if orderlistdata.data.errorType %}
+                                <div class="alert alert-danger alert-dark-mode alert-dismissible text-center" role="alert">
+                                  <strong>Error:</strong> {{ orderlistdata.data.errorMessage }}
+                                </div>
+                            {% else %}
+                                {% for order in orderlistdata.data %}
+                                    <tr>
+                                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">{{ order.tradingSymbol }}</h6></td>
+                                        <td class="border-bottom-0">
+                                            {% if order.orderStatus == 'TRADED' %}
+                                                <span class="badge bg-success rounded-3 fw-semibold">TRADED</span>
+                                            {% elif order.orderStatus == 'CANCELLED' %}
+                                                <span class="badge bg-danger rounded-3 fw-semibold">CANCELLED</span>
+                                            {% elif order.orderStatus == 'REJECTED' %}
+                                                <span class="badge bg-danger rounded-3 fw-semibold">REJECTED</span>
+                                            {% else %}
+                                                <span class="badge bg-warning rounded-3 fw-semibold">{{ order.orderStatus }}</span>
+                                            {% endif %}
+                                        </td>
+                            
+                                        <td class="border-bottom-0">
+                                            {% if order.transactionType == 'BUY' %}
+                                                <p class="badge bg-success rounded-3 fw-semibold">{{ order.transactionType }}</p>
+                                            {% else %}
+                                                <p class="badge bg-danger rounded-3 fw-semibold">{{ order.transactionType }}</p>
+                                            {% endif %}
+                                        </td>
+                                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">{{ order.orderType }}</h6></td>
+                                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">{{ order.quantity }}</h6></td>
+                                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0 fs-4">₹{{ order.price|floatformat:2 }}</h6></td>
+                                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">{{ order.createTime }}</h6></td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center fw-semibold">No Orders Found</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                            
+                              </tbody>
+                          </table>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          {% endif %}
+        <div class="py-6 px-6 text-center">
+          <p class="mb-0 fs-4">Design and Developed by <a href="https://adminmart.com/" target="_blank" class="pe-1 text-primary text-decoration-underline">TradingWitch</a> Distributed by <a href="https://themewagon.com">TradingWitch</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+{% endblock %}
+
+
+{% block extra_js %}
+<!-- jQuery must load first -->
+<script src="{% static 'dashboard/assets/libs/jquery/dist/jquery.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/libs/apexcharts/dist/apexcharts.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/sidebarmenu.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/app.min.js' %}"></script>
+
+<script>
+  // ============================================================
+  // GLOBAL VARIABLES
+  // ============================================================
+  const username = "{{ user.username }}";
+  
+  // ============================================================
+  // CLOCK FUNCTIONALITY
+  // ============================================================
+  function updateClock() {
+    let currentTime = new Date();
+    let hours = currentTime.getHours();
+    let minutes = currentTime.getMinutes();
+    let seconds = currentTime.getSeconds();
+    let day = currentTime.getDay();
+    let meridiem = hours < 12 ? "AM" : "PM";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    let timeString = `${hours}:${minutes}:${seconds} ${meridiem}`;
+    const timeEl = document.getElementById("time");
+    if (timeEl) {
+      timeEl.innerHTML = `<span class="time-label">TIME:</span> <span class="time-value">${timeString}</span>`;
+    }
+
+    // Check market hours (Mon-Fri, 9:15 AM - 3:30 PM)
+    if (day >= 1 && day <= 5 && 
+        ((currentTime.getHours() > 9 || (currentTime.getHours() === 9 && currentTime.getMinutes() >= 15)) && 
+         (currentTime.getHours() < 15 || (currentTime.getHours() === 15 && currentTime.getMinutes() <= 30)))) {
+      
+      let endTime = new Date(currentTime);
+      endTime.setHours(15, 30, 0, 0);
+
+      let remainingTime = endTime - currentTime;
+      let remainingHours = Math.floor((remainingTime % 86400000) / 3600000);
+      let remainingMinutes = Math.floor((remainingTime % 3600000) / 60000);
+      let remainingSeconds = Math.floor((remainingTime % 60000) / 1000);
+
+      remainingHours = remainingHours < 10 ? "0" + remainingHours : remainingHours;
+      remainingMinutes = remainingMinutes < 10 ? "0" + remainingMinutes : remainingMinutes;
+      remainingSeconds = remainingSeconds < 10 ? "0" + remainingSeconds : remainingSeconds;
+
+      const remainingEl = document.getElementById("remainingTime");
+      if (remainingEl) {
+        remainingEl.innerHTML = "Time Left: " + remainingHours + ":" + remainingMinutes + ":" + remainingSeconds;
+      }
+    } else {
+      const remainingEl = document.getElementById("remainingTime");
+      if (remainingEl) {
+        remainingEl.innerHTML = "STATUS: Market Closed";
+      }
+    }
+  }
+
+  // ============================================================
+  // INITIALIZE CLOCK
+  // ============================================================
+  setInterval(updateClock, 10000);
+  updateClock();
+
+  // ============================================================
+  // TOAST HELPER FUNCTION
+  // ============================================================
+
+    function activateKillSwitch() {
+        // Get the username from the button's value attribute
+        const username = document.getElementById('activateKillButton').value;
+
+        fetch('/activate_kill_switch/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: username })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Create a toast element
+            const toastContainer = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-bg-${data.message ? 'success' : 'danger'} border-0`;
+            toast.role = 'alert';
+            toast.ariaLive = 'assertive';
+            toast.ariaAtomic = 'true';
+            toast.dataset.bsDelay = '3000';
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${data.message ? data.message : 'Error: ' + data.error}
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+
+            // Append the toast to the toast container
+            toastContainer.appendChild(toast);
+
+            // Show the toast
+            const toastInstance = new bootstrap.Toast(toast);
+            toastInstance.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+
+            // Handle error toast
+            const toastContainer = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast align-items-center text-bg-danger border-0';
+            toast.role = 'alert';
+            toast.ariaLive = 'assertive';
+            toast.ariaAtomic = 'true';
+            toast.dataset.bsDelay = '3000';
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        Error: ${error.message}
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+
+            // Append the error toast to the toast container
+            toastContainer.appendChild(toast);
+
+            // Show the error toast
+            const toastInstance = new bootstrap.Toast(toast);
+            toastInstance.show();
+        });
+    }
+  function showToast(message, type = 'success') {
+    const toastContainer = document.querySelector('.toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-bg-${type} border-0`;
+    toast.role = 'alert';
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    toast.dataset.bsDelay = '3000';
+    
+    toast.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    `;
+
+    toastContainer.appendChild(toast);
+    const toastInstance = new bootstrap.Toast(toast);
+    toastInstance.show();
+
+    toast.addEventListener('hidden.bs.toast', function() {
+      toast.remove();
+    });
+  }
+
+  // ============================================================
+  // TOGGLE KILL SWITCH FUNCTIONALITY
+  // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Select the "Activate Kill" button and modal confirm button
+        const activateKillButton = document.getElementById('activateKillButton');
+        const confirmActionButton = document.getElementById('confirmAction');
+        
+        // Show the confirmation modal when "Activate Kill" button is clicked
+        activateKillButton.addEventListener('click', function() {
+        const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+        confirmationModal.show();
+        });
+
+        // Perform the "Activate Kill" action on confirmation
+        confirmActionButton.addEventListener('click', function() {
+        // Custom action for the "Activate Kill" button
+        console.log("Kill switch activated.");
+        activateKillSwitch(); //
+        
+        // Add further actions here, such as making an AJAX request or redirecting
+
+        // Hide the modal after confirming
+        const confirmationModal = bootstrap.Modal.getInstance(document.getElementById('confirmationModal'));
+        confirmationModal.hide();
+        });
+    });
+
+  // ============================================================
+  // SMART EXIT BUTTON
+  // ============================================================
+  document.addEventListener('DOMContentLoaded', function() {
+    const smartExitButton = document.getElementById("smartExitButton");
+    if (!smartExitButton) return;
+
+    smartExitButton.addEventListener("click", function() {
+      const username = this.getAttribute("data-username");
+
+      fetch('/close-all-positions/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username })
+      })
+      .then(response => response.json())
+      .then(data => {
+        showToast(data.message || 'Error: ' + data.error, data.message ? 'success' : 'danger');
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        showToast('Error: ' + error.message, 'danger');
+      });
+    });
+  });
+
+  // ============================================================
+  // TABLE PAGINATION
+  // ============================================================
+  document.addEventListener('DOMContentLoaded', function() {
+    // Orders table pagination
+    const ordersRowsPerPage = 6;
+    const ordersTableBody = document.getElementById('ordersTableBody');
+    
+    if (ordersTableBody) {
+      const ordersRows = ordersTableBody.getElementsByTagName('tr');
+      const ordersTotalRows = ordersRows.length;
+      let ordersCurrentPage = 1;
+      let ordersTotalPages = Math.ceil(ordersTotalRows / ordersRowsPerPage);
+
+      const ordersPageInfo = document.getElementById('pageInfo');
+      if (ordersPageInfo) {
+        ordersPageInfo.innerText = `Page ${ordersCurrentPage} of ${ordersTotalPages}`;
+      }
+
+      function displayOrdersPage(page) {
+        for (let i = 0; i < ordersTotalRows; i++) {
+          ordersRows[i].style.display = 'none';
+        }
+
+        let start = (page - 1) * ordersRowsPerPage;
+        let end = Math.min(start + ordersRowsPerPage, ordersTotalRows);
+        for (let i = start; i < end; i++) {
+          ordersRows[i].style.display = '';
+        }
+
+        if (ordersPageInfo) {
+          ordersPageInfo.innerText = `Page ${page} of ${ordersTotalPages}`;
+        }
+      }
+
+      displayOrdersPage(ordersCurrentPage);
+
+      document.getElementById('prevPage')?.addEventListener('click', function() {
+        if (ordersCurrentPage > 1) {
+          ordersCurrentPage--;
+          displayOrdersPage(ordersCurrentPage);
+        }
+      });
+
+      document.getElementById('nextPage')?.addEventListener('click', function() {
+        if (ordersCurrentPage < ordersTotalPages) {
+          ordersCurrentPage++;
+          displayOrdersPage(ordersCurrentPage);
+        }
+      });
+    }
+
+    // Positions table pagination
+    const positionsRowsPerPage = 7;
+    let positionsCurrentPage = 1;
+    const positionsTableBody = document.getElementById('positionsTableBody');
+    
+    if (positionsTableBody) {
+      function displayPositionsTable() {
+        const rows = positionsTableBody.getElementsByTagName('tr');
+        const totalPages = Math.ceil(rows.length / positionsRowsPerPage);
+
+        for (let i = 0; i < rows.length; i++) {
+          rows[i].style.display = 'none';
+        }
+
+        const start = (positionsCurrentPage - 1) * positionsRowsPerPage;
+        const end = Math.min(start + positionsRowsPerPage, rows.length);
+
+        for (let i = start; i < end; i++) {
+          rows[i].style.display = '';
+        }
+
+        const pageInfoPos = document.getElementById('pageInfoPos');
+        if (pageInfoPos) {
+          pageInfoPos.innerText = `Page ${positionsCurrentPage} of ${totalPages}`;
+        }
+      }
+
+      displayPositionsTable();
+
+      document.getElementById('prevPagepos')?.addEventListener('click', () => {
+        if (positionsCurrentPage > 1) {
+          positionsCurrentPage--;
+          displayPositionsTable();
+        }
+      });
+
+      document.getElementById('nextPagepos')?.addEventListener('click', () => {
+        const totalRows = positionsTableBody.getElementsByTagName('tr').length;
+        const totalPages = Math.ceil(totalRows / positionsRowsPerPage);
+        if (positionsCurrentPage < totalPages) {
+          positionsCurrentPage++;
+          displayPositionsTable();
+        }
+      });
+    }
+  });
+
+  // ============================================================
+  // CHECK LOG STATUS PERIODICALLY
+  // ============================================================
+  function checkStatus() {
+    fetch("{% url 'check_log_status' %}?username=" + encodeURIComponent(username))
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'reload') {
+          location.reload();
+        } else {
+          console.log("No change in order count, no reload needed.");
+        }
+      })
+      .catch(error => console.error("Error checking status:", error));
+  }
+
+  // Start checking status every 30 seconds
+  setInterval(checkStatus, 10000);
+
+  // ============================================================
+  // CHART POPUP FUNCTIONS
+  // ============================================================
+  function openPositionPopup(securityId) {
+    const url = `https://web.dhan.co/Charts?exch=NSE&seg=D&secid=${securityId}`;
+    window.open(url, 'PositionChartWindow', 'width=800,height=600');
+  }
+
+  function openStopLossPopup(securityId) {
+    const url = `https://web.dhan.co/Charts?exch=NSE&seg=D&secid=${securityId}`;
+    window.open(url, 'StopLossChartWindow', 'width=800,height=600');
+  }
+
+  function openPopup(securityId) {
+    const url = `https://web.dhan.co/Charts?exch=NSE&seg=D&secid=${securityId}`;
+    window.open(url, 'ChartWindow', 'width=800,height=600');
+  }
+  // ============================================================
+  // CHART INITIALIZATION
+  // ============================================================
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize ApexCharts if chart element exists
+    const chartElement = document.querySelector("#chart");
+    if (chartElement && typeof ApexCharts !== 'undefined') {
+      // Add your chart initialization code here from dashboard.js
+      console.log("Chart element ready for initialization");
+    }
+
+    const breakupElement = document.querySelector("#breakup");
+    if (breakupElement && typeof ApexCharts !== 'undefined') {
+      // Add your breakup chart initialization code here
+      console.log("Breakup chart element ready for initialization");
+    }
+  });
+
+  // ============================================================
+  // INITIALIZE TOASTS ON PAGE LOAD
+  // ============================================================
+  document.addEventListener('DOMContentLoaded', function() {
+    var toastElements = document.querySelectorAll('.toast');
+    toastElements.forEach(function(toastEl) {
+      var toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    });
+  });
+
+  console.log("Dashboard scripts loaded successfully");
+</script>
+
+<script src="{% static 'dashboard/assets/js/dashboard.js' %}"></script>
+{% endblock %}

@@ -21,8 +21,7 @@ $(function () {
         breakup_series[1] > 0 ? "#32df2d" : (breakup_series[1] < 0 ? "#ff0000" : "#3569ff"), // Green if positive, Red if negative, Blue if zero
         "#fff47d" // Third color - Orange (default)
       ];
-      console.log("colorscolorscolorscolorscolors", colors)
-      console.log("breakup_seriesbreakup_seriesbreakup_seriesbreakup_series", colors)
+
       // Check if the second value is negative and make it positive if so
       if (breakup_series[1] < 0) {
         breakup_series[1] = Math.abs(breakup_series[1]);
@@ -151,7 +150,7 @@ $(function () {
     chart_earning = chart_earning.filter(value => value !== 0);
     chart_earning.unshift(0);
 
-    console.log("chart_earningchart_earningchart_earningchart_earningchart_earningchart_earningchart_earningchart_earning", chart_earning)
+    
 
     let chartColor = (colour_selector > 0) ? "#32df2d" : (colour_selector === 0 ? "#49BEFF" : "#ff2626"); 
 
@@ -159,7 +158,7 @@ $(function () {
 
     let chartColor2 = chartColor
 
-    console.log("chartColorchartColorchartColorchartColor", chartColor, "positiveEarningsSum", positiveEarningsSum)
+    
 
     // =====================================
     // Profit Chart

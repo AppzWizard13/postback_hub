@@ -1,8 +1,0 @@
-DB_HOST=dpg-ctakf9d6147c73bnbrag-a
-DB_NAME=tradewiz_live_db
-DB_PASSWORD=1woyJJcEo0wae4cqqhfFn2RGBkbWAj0
-DB_PORT=5432
-DB_USER=tradewiz_live_db_user
-DEBUG=True
-LIVEDB=False
-TESTMODE=False

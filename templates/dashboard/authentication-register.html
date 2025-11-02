@@ -3,69 +3,191 @@
 {% block content %}
 <div class="container-fluid" style="max-width:none">
     <div class="card w-100">
-        <div class="card-body" style="height:100vh">
-            <h5 class="card-title fw-semibold mb-4">Create User</h5>
-                    <form method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
+        <div class="card-body" style="min-height:100vh">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="card-title fw-semibold mb-0">Create User</h5>
+                {% comment %} <a href="{% url 'user_list' %}" class="btn btn-secondary">
+                    <i class="ti ti-arrow-left"></i> Back to Users
+                </a> {% endcomment %}
+            </div>
 
+            <form method="POST" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                <!-- Display non-field errors -->
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <ul class="mb-0">
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+
+                <!-- Personal Information Section -->
+                <div class="card mb-4">
+                    <div class="card-header bg-dark text-white">
+                        <h6 class="mb-0">Personal Information</h6>
+                    </div>
+                    <div class="card-body">
                         <!-- Row 1: First Name and Last Name -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="id_first_name" class="form-label">First Name</label>
+                                <label for="{{ form.first_name.id_for_label }}" class="form-label fw-medium">
+                                    First Name <span class="text-danger">*</span>
+                                </label>
                                 {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.first_name.errors|striptags }}
+                                </div>
+                                {% endif %}
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="id_last_name" class="form-label">Last Name</label>
+                                <label for="{{ form.last_name.id_for_label }}" class="form-label fw-medium">
+                                    Last Name <span class="text-danger">*</span>
+                                </label>
                                 {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.last_name.errors|striptags }}
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
 
-                        <!-- Row 2: Email and Username -->
+                        <!-- Row 2: Email and Phone Number -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="id_email" class="form-label">Email Address</label>
+                                <label for="{{ form.email.id_for_label }}" class="form-label fw-medium">
+                                    Email Address <span class="text-danger">*</span>
+                                </label>
                                 {{ form.email }}
+                                {% if form.email.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.email.errors|striptags }}
+                                </div>
+                                {% endif %}
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="id_username" class="form-label">Username</label>
+                                <label for="{{ form.phone_number.id_for_label }}" class="form-label fw-medium">
+                                    Phone Number
+                                </label>
+                                {{ form.phone_number }}
+                                {% if form.phone_number.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.phone_number.errors|striptags }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Information Section -->
+                <div class="card mb-4">
+                    <div class="card-header bg-dark text-white">
+                        <h6 class="mb-0">Account Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <!-- Row 3: Username -->
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.username.id_for_label }}" class="form-label fw-medium">
+                                    Username <span class="text-danger">*</span>
+                                </label>
                                 {{ form.username }}
+                                {% if form.username.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.username.errors|striptags }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Row 3: Password and Confirm Password -->
+                        <!-- Row 4: Password and Confirm Password -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="id_password1" class="form-label">Password</label>
+                                <label for="{{ form.password1.id_for_label }}" class="form-label fw-medium">
+                                    Password <span class="text-danger">*</span>
+                                </label>
                                 {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.password1.errors|striptags }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    <ul class="mb-0 ps-3">
+                                        <li>Must be at least 8 characters long</li>
+                                        <li>Cannot be too similar to your other personal information</li>
+                                        <li>Cannot be a commonly used password</li>
+                                        <li>Cannot be entirely numeric</li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="id_password2" class="form-label">Confirm Password</label>
+                                <label for="{{ form.password2.id_for_label }}" class="form-label fw-medium">
+                                    Confirm Password <span class="text-danger">*</span>
+                                </label>
                                 {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.password2.errors|striptags }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Enter the same password as before, for verification.
+                                </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- Submit button -->
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary w-40 py-2 fs-4 mb-4 rounded-2">Create User</button>
-                            </div>
-                        </div>
-
-                        {% comment %} <div class="d-flex align-items-center justify-content-center">
-                            <p class="fs-4 mb-0 fw-bold">Already have an Account?</p>
-                            <a class="text-primary fw-bold ms-2" href="{% url 'login' %}">Sign In</a>
-                        </div> {% endcomment %}
-                        {% if form.errors %}
-                        <div class="alert alert-danger">
-                            <ul>
-                                {% for field, errors in form.errors.items %}
-                                    <li><strong>{{ field }}:</strong> {{ errors|join:", " }}</li>
-                                {% endfor %}
-                                </ul>
-                            </div>
-                        {% endif %}
-                    </form>
+                <!-- Submit button -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary px-4 py-2 me-2">
+                            <i class="ti ti-user-plus me-1"></i> Create User
+                        </button>
+                        {% comment %} <a href="{% url 'user_list' %}" class="btn btn-outline-secondary px-4 py-2">
+                            <i class="ti ti-x me-1"></i> Cancel
+                        </a> {% endcomment %}
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<style>
+    .form-label.fw-medium {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .text-danger {
+        color: #dc3545 !important;
+    }
+    
+    .card-header {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(0,0,0,.125);
+    }
+    
+    .form-text {
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+    
+    .alert-danger ul {
+        padding-left: 1.25rem;
+    }
+</style>
 {% endblock %}
